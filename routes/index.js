@@ -18,10 +18,13 @@ const ConfigState = {
 
 var timers = {};
 
+// todo: check if context is unique per user. Set 2 timers at the same time using different users
 bot.context({ isAsking: ConfigState.NONE });
 
 bot.command("start", function (msg, reply, next) {
 	console.log("Start from: ", msg.from.id);
+
+	// todo: localize strings in english
 	reply.text("Ciao! Sono Bibot.");
 
 	askStepDate(msg, reply);
@@ -67,6 +70,7 @@ function stepDate(msg, reply) {
 	msg.context.isAsking = ConfigState.DATE_CONFIRMATION;
 	msg.context.stepDate = date;
 	let formatted = date.locale("IT").format("dddd, D MMMM YYYY");
+	// todo: give options to be selected, instead of this
 	reply.text("Confermi questa data? (S/N) \n" + formatted);
 }
 
@@ -130,6 +134,7 @@ function stepAlarmTime(msg, reply) {
 
 function setScheduling(msg, reply) {
 	let startingDateMoment = msg.context.stepDate;
+	// todo: if date is older than now, add 3 weeks
 	let startingDate = startingDateMoment.utc().format("DDD");
 
 	let timeMoment = msg.context.stepAlarmTime;
@@ -142,6 +147,8 @@ function setScheduling(msg, reply) {
 		sched = later.parse.recur().after(startingDate).dayOfYear().on(time).time();
 	}
 	else if (pillType == "21") {
+		// todo: this works only when starting date is after today
+		// check better if this really works
 		sched = later.parse.recur().after(startingDate).dayOfYear().on(time).time().except().every(4).weekOfYear();
 	}
 	else {
@@ -149,6 +156,7 @@ function setScheduling(msg, reply) {
 		return;
 	}
 
+	// todo: 100 is too much...
 	var occurrences = later.schedule(sched).next(100);
 	var schedText = "";
 	for (var i = 0; i < 100; i++) {
@@ -157,8 +165,13 @@ function setScheduling(msg, reply) {
 
 	reply.text("Ti avviserò questi giorni: \n" + schedText);
 
+	// todo: ask for confirmation
+
 	let timer = later.setInterval(function () {
+		// todo: insert plenty of strings and pick one randomly.
 		reply.text("Ehi, prendi la pillola!");
+
+		// todo: ask this again untill it gets an answer
 	}, sched);
 
 	let id = msg.chat.id;
