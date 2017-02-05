@@ -66,7 +66,7 @@ function stepDate(msg, reply) {
 
 	msg.context.isAsking = ConfigState.DATE_CONFIRMATION;
 	msg.context.stepDate = date;
-	let formatted = date.locale("IT").format("LLLL");
+	let formatted = date.locale("IT").format("dddd, D MMMM YYYY");
 	reply.text("Confermi questa data? (S/N) \n" + formatted);
 }
 
@@ -110,7 +110,7 @@ function stepPillType(msg, reply) {
 
 function askStepAlarmTime(msg, reply) {
 	msg.context.isAsking = ConfigState.ALARM_TIME;
-	reply.text("A che ora vuoi che ti avvisi?");
+	reply.text("A che ora vuoi che ti avvisi? Ad esempio: 20:00");
 }
 
 function stepAlarmTime(msg, reply) {
@@ -118,7 +118,7 @@ function stepAlarmTime(msg, reply) {
 	let time = moment(timeRaw, ['h:m a', 'H:m']);
 
 	if (!time.isValid()) {
-		reply.text("L'orario è scritto in modo errato. Puoi scriverlo di nuovo?");
+		reply.text("Non riesco a capire l'orario. Puoi scriverlo di nuovo?");
 		return;
 	}
 
