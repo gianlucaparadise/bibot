@@ -16,6 +16,8 @@ const ConfigState = {
 	COMPLETED: 5
 };
 
+var timers = {};
+
 bot.context({ isAsking: ConfigState.NONE });
 
 bot.command("start", function (msg, reply, next) {
@@ -154,11 +156,33 @@ function setScheduling(msg, reply) {
 	}
 
 	reply.text("Ti avviserò questi giorni: \n" + schedText);
+
+	let timer = later.setInterval(function () {
+		reply.text("Ehi, prendi la pillola!");
+	}, sched);
+
+	let id = msg.chat.id;
+
+	let oldTimer = timers[id];
+	if (oldPinger) oldTimer.clear();
+
+	timers[id] = timer;
 }
 
 bot.command("stop", function (msg, reply, next) {
 	console.log("Stopped from: ", msg.from.id);
 	msg.context.isAsking = ConfigState.NONE;
+
+	let id = msg.chat.id;
+
+	let oldTimer = timers[id];
+	if (!oldPinger) {
+		reply.text("Non hai nessun allarme da fermare!");
+		return;
+	}
+
+	oldTimer.clear();
+	reply.text("Ho fermato l'allarme. Puoi ripetere la configurazione con /start.");
 	reply.text("Ciao, a presto!");
 });
 
