@@ -12,10 +12,11 @@ router.get('/register', function(req, res, next) {
   var bot = botgram(process.env.TELEGRAM_TOKEN);
 
   bot.command("start", function (msg, reply, next) {
-    console.log("Ciao!", msg.from.id);
+    console.log("Start from: ", msg.from.id);
+    reply.text("Ciao! Sono Bibot.");
   });
 
-  res.send("Register completed");
+  res.render('register', { title: 'Bibot', body: 'Registration completed' });
 });
 
 module.exports = router;
