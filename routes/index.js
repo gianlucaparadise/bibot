@@ -164,7 +164,7 @@ function setScheduling(msg, reply) {
 	let id = msg.chat.id;
 
 	let oldTimer = timers[id];
-	if (oldPinger) oldTimer.clear();
+	if (oldTimer) oldTimer.clear();
 
 	timers[id] = timer;
 }
@@ -176,7 +176,7 @@ bot.command("stop", function (msg, reply, next) {
 	let id = msg.chat.id;
 
 	let oldTimer = timers[id];
-	if (!oldPinger) {
+	if (!oldTimer) {
 		reply.text("Non hai nessun allarme da fermare!");
 		return;
 	}
