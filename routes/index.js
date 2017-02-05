@@ -65,7 +65,7 @@ function stepDate(msg, reply) {
 	msg.context.isAsking = ConfigState.DATE_CONFIRMATION;
 	msg.context.stepDate = date;
 	let formatted = date.locale("IT").format("LLLL");
-	reply.text("Confermi questa data? (S/N) \n " + formatted);
+	reply.text("Confermi questa data? (S/N) \n" + formatted);
 }
 
 function stepDateConfirmation(msg, reply) {
@@ -153,7 +153,7 @@ function setScheduling(msg, reply) {
 		schedText += occurrences[i] + '\n';
 	}
 
-	reply.text("Ti avviserò questi giorni: \n " + schedText);
+	reply.text("Ti avviserò questi giorni: \n" + schedText);
 }
 
 bot.command("stop", function (msg, reply, next) {
