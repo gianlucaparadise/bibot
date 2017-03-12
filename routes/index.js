@@ -135,43 +135,43 @@ function stepAlarmTime(msg, reply) {
 function setScheduling(msg, reply) {
 	let startingDateMoment = msg.context.stepDate;
 	// todo: if date is older than now, add 3 weeks
-	let startingDate = startingDateMoment.utc().format("DDD");
+	let startingDate = startingDateMoment.utc();
+	let startingDayOfYear = startingDate.format("DDD");
 
 	let timeMoment = msg.context.stepAlarmTime;
 	let time = timeMoment.utc().format("HH:mm");
 
 	let pillType = msg.context.stepPillType;
 
-	let sched;
-	if (pillType == "28") {
-		sched = later.parse.recur().after(startingDate).dayOfYear().on(time).time();
-	}
-	else if (pillType == "21") {
-		// todo: this works only when starting date is after today
-		// check better if this really works
-		sched = later.parse.recur().after(startingDate).dayOfYear().on(time).time().except().every(4).weekOfYear();
-	}
-	else {
-		reply.text("Ho avuto dei problemi mentre impostavo il timer. Puoi ripetere ripartendo da /start?");
-		return;
-	}
+	// let sched;
+	// if (pillType == "28") {
+	// 	sched = later.parse.recur().after(startingDayOfYear).dayOfYear().on(time).time();
+	// }
+	// else if (pillType == "21") {
+	// 	// todo: this works only when starting date is after today
+	// 	// check better if this really works
+	// 	sched = later.parse.recur().after(startingDayOfYear).dayOfYear().on(time).time().except().every(4).weekOfYear();
+	// }
+	// else {
+	// 	reply.text("Ho avuto dei problemi mentre impostavo il timer. Puoi ripetere ripartendo da /start?");
+	// 	return;
+	// }
 
-	// todo: 100 is too much...
-	var occurrences = later.schedule(sched).next(100);
-	var schedText = "";
-	for (var i = 0; i < 100; i++) {
-		schedText += occurrences[i] + '\n';
-	}
+	// // todo: 100 is too much...
+	// var occurrences = later.schedule(sched).next(100);
+	// var schedText = "";
+	// for (var i = 0; i < 100; i++) {
+	// 	schedText += occurrences[i] + '\n';
+	// }
 
-	reply.text("Ti avviserò questi giorni: \n" + schedText);
+	// reply.text("Ti avviserò questi giorni: \n" + schedText);
 
-	// todo: ask for confirmation
+	// // todo: ask for confirmation
+
+	let sched = later.parse.recur().after(startingDayOfYear).dayOfYear().on(time).time();
 
 	let timer = later.setInterval(function () {
-		// todo: insert plenty of strings and pick one randomly.
-		reply.text("Ehi, prendi la pillola!");
-
-		// todo: ask this again untill it gets an answer
+		pillWarning(reply, startingDate, pillType);
 	}, sched);
 
 	let id = msg.chat.id;
@@ -180,6 +180,27 @@ function setScheduling(msg, reply) {
 	if (oldTimer) oldTimer.clear();
 
 	timers[id] = timer;
+}
+
+function pillWarning(reply, startingDate, pillType) {
+	if (pillType == "21") {
+		let today = moment(new Date()).utc();
+
+		let pastDays = startingDate.diff(today, 'days');
+		// fixme: this number will get bigger and bigger
+		pastDays = Math.abs(pastDays);
+
+		let pillDay = (pastDays % 28) + 1; // this is a number between 1 and 28
+
+		if (pillDay > 21) {
+			return;
+		}
+	}
+
+	// todo: insert plenty of strings and pick one randomly.
+	reply.text("Ehi, prendi la pillola!");
+
+	// todo: ask this again untill it gets an answer
 }
 
 bot.command("stop", function (msg, reply, next) {
