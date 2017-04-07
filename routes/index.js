@@ -182,6 +182,8 @@ function setScheduling(msg, reply) {
 	if (oldTimer) oldTimer.clear();
 
 	timers[id] = timer;
+
+	reply.text("Promemoria settato!");
 }
 
 function pillWarning(reply, startingDate, pillType) {
