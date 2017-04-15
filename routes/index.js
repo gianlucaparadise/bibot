@@ -5,9 +5,9 @@ var router = express.Router();
 
 var moment = require("moment");
 var later = require("later");
-var botgram = require("botgram");
+const Telegraf = require('telegraf')
 
-var bot = botgram(process.env.TELEGRAM_TOKEN);
+const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
 
 const ConfigState = {
 	NONE: 0,
@@ -23,127 +23,129 @@ var timers = {};
 // todo: check if context is unique per user. Set 2 timers at the same time using different users
 bot.context({ isAsking: ConfigState.NONE });
 
-bot.command("start", function (msg, reply, next) {
-	console.log("Start from: ", msg.from.id);
+bot.command('start', context => {
+	console.log("Start from: ", JSON.stringify(context.from));
 
 	// todo: localize strings in english
-	reply.text("Ciao! Sono Bibot.");
+	context.reply("Ciao! Sono Bibot.");
 
-	askStepDate(msg, reply);
+	askStepDate(context);
 });
 
-bot.text(function (msg, reply, next) {
-	console.log("Received a text message:", msg.text);
+bot.on('text', context => {
+	console.log("Received a text message:", JSON.stringify(context.message));
+	let isAsking = context.session.isAsking || ConfigState.NONE;
+	console.log("isAsking: " + isAsking)
 
-	switch (msg.context.isAsking) {
+	switch (isAsking) {
 		case ConfigState.DATE:
-			stepDate(msg, reply);
+			stepDate(context);
 			break;
 
 		case ConfigState.DATE_CONFIRMATION:
-			stepDateConfirmation(msg, reply);
+			stepDateConfirmation(context);
 			break;
 
 		case ConfigState.PILL_TYPE:
-			stepPillType(msg, reply);
+			stepPillType(context);
 			break;
 
 		case ConfigState.ALARM_TIME:
-			stepAlarmTime(msg, reply);
+			stepAlarmTime(context);
 			break;
 	}
 });
 
-function askStepDate(msg, reply) {
+function askStepDate(context) {
 	let today = moment().format("YYYY-MM-DD");
-	msg.context.isAsking = ConfigState.DATE;
-	reply.text("In che giorno hai iniziato a prendere la pillola? Ad esempio: " + today);
+	context.session.isAsking = ConfigState.DATE;
+	context.reply("In che giorno hai iniziato a prendere la pillola? Ad esempio: " + today);
 }
 
-function stepDate(msg, reply) {
-	let dateRaw = msg.text;
+function stepDate(context) {
+	let dateRaw = context.message;
 	let date = moment(dateRaw, "YYYY-MM-DD");
 
 	if (!date.isValid()) {
-		reply.text("La data è errata. Puoi reinserirla?");
+		context.reply("La data è errata. Puoi reinserirla?");
 		return;
 	}
 
-	msg.context.isAsking = ConfigState.DATE_CONFIRMATION;
-	msg.context.stepDate = date;
+	context.session.isAsking = ConfigState.DATE_CONFIRMATION;
+	context.session.stepDate = date;
 	let formatted = date.locale("IT").format("dddd, D MMMM YYYY");
 	// todo: give options to be selected, instead of this
-	reply.text("Confermi questa data? (S/N) \n" + formatted);
+	context.reply("Confermi questa data? (S/N) \n" + formatted);
 }
 
-function stepDateConfirmation(msg, reply) {
-	let answerText = msg.text.toLowerCase();
+function stepDateConfirmation(context) {
+	let answerText = context.message.toLowerCase();
 
 	if (answerText == "n" || answerText == "no") {
-		reply.text("Va bene, ricominciamo.");
-		askStepDate(msg, reply);
+		context.reply("Va bene, ricominciamo.");
+		askStepDate(context);
 		return;
 	}
 
 	if (answerText != "s" && answerText != "si") {
-		reply.text("Lo prendo come un no.");
-		askStepDate(msg, reply);
+		context.reply("Lo prendo come un no.");
+		askStepDate(context);
 		return;
 	}
 
-	askStepPillType(msg, reply);
+	askStepPillType(context);
 }
 
-function askStepPillType(msg, reply) {
-	msg.context.isAsking = ConfigState.PILL_TYPE;
-	msg.context.stepDateConfirmation = true;
-	reply.text("Prendi una pillola da 21 o da 28 giorni? (21/28)");
+function askStepPillType(context) {
+	context.session.isAsking = ConfigState.PILL_TYPE;
+	context.session.stepDateConfirmation = true;
+	context.reply("Prendi una pillola da 21 o da 28 giorni? (21/28)");
 }
 
-function stepPillType(msg, reply) {
-	let pillType = msg.text;
+function stepPillType(context) {
+	let pillType = context.message;
 
 	if (pillType != "21" && pillType != "28") {
-		reply.text("Scusa, non ho capito.");
-		askStepPillType(msg, reply);
+		context.reply("Scusa, non ho capito.");
+		askStepPillType(context);
 		return;
 	}
 
-	msg.context.stepPillType = pillType;
+	context.session.stepPillType = pillType;
 
-	askStepAlarmTime(msg, reply);
+	askStepAlarmTime(context);
 }
 
-function askStepAlarmTime(msg, reply) {
-	msg.context.isAsking = ConfigState.ALARM_TIME;
-	reply.text("A che ora vuoi che ti avvisi? Ad esempio: 20:00");
+function askStepAlarmTime(context) {
+	context.session.isAsking = ConfigState.ALARM_TIME;
+	context.reply("A che ora vuoi che ti avvisi? Ad esempio: 20:00");
 }
 
-function stepAlarmTime(msg, reply) {
-	let timeRaw = msg.text;
+function stepAlarmTime(context) {
+	let timeRaw = context.message;
 	let time = moment(timeRaw, ['h:m a', 'H:m']);
 
 	if (!time.isValid()) {
-		reply.text("Non riesco a capire l'orario. Puoi scriverlo di nuovo?");
+		context.reply("Non riesco a capire l'orario. Puoi scriverlo di nuovo?");
 		return;
 	}
 
-	msg.context.isAsking = ConfigState.COMPLETED;
-	msg.context.stepAlarmTime = time;
+	context.session.isAsking = ConfigState.COMPLETED;
+	context.session.stepAlarmTime = time;
 
-	setScheduling(msg, reply);
+	setScheduling(context);
 }
 
-function setScheduling(msg, reply) {
-	let startingDateMoment = msg.context.stepDate;
+function setScheduling(context) {
+	let startingDateMoment = context.session.stepDate;
 	// todo: if date is older than now, add 3 weeks
 	let startingDate = startingDateMoment.utc();
 	let startingDayOfYear = startingDate.format("DDD");
 
-	let timeMoment = msg.context.stepAlarmTime;
+	let timeMoment = context.session.stepAlarmTime;
 	let time = timeMoment.utc().format("HH:mm");
 
-	let pillType = msg.context.stepPillType;
+	let pillType = context.session.stepPillType;
 
 	// let sched;
 	// if (pillType == "28") {
@@ -155,7 +157,7 @@ function setScheduling(msg, reply) {
 	// 	sched = later.parse.recur().after(startingDayOfYear).dayOfYear().on(time).time().except().every(4).weekOfYear();
 	// }
 	// else {
-	// 	reply.text("Ho avuto dei problemi mentre impostavo il timer. Puoi ripetere ripartendo da /start?");
+	// 	context.reply("Ho avuto dei problemi mentre impostavo il timer. Puoi ripetere ripartendo da /start?");
 	// 	return;
 	// }
 
@@ -166,27 +168,27 @@ function setScheduling(msg, reply) {
 	// 	schedText += occurrences[i] + '\n';
 	// }
 
-	// reply.text("Ti avviserò questi giorni: \n" + schedText);
+	// context.reply("Ti avviserò questi giorni: \n" + schedText);
 
 	// // todo: ask for confirmation
 
 	let sched = later.parse.recur().after(startingDayOfYear).dayOfYear().on(time).time();
 
 	let timer = later.setInterval(function () {
-		pillWarning(reply, startingDate, pillType);
+		pillWarning(context, startingDate, pillType);
 	}, sched);
 
-	let id = msg.chat.id;
+	let id = context.chat.id;
 
 	let oldTimer = timers[id];
 	if (oldTimer) oldTimer.clear();
 
 	timers[id] = timer;
 
-	reply.text("Promemoria settato!");
+	context.reply("Promemoria settato!");
 }
 
-function pillWarning(reply, startingDate, pillType) {
+function pillWarning(context, startingDate, pillType) {
 	if (pillType == "21") {
 		let today = moment(new Date()).utc();
 
@@ -202,26 +204,26 @@ function pillWarning(reply, startingDate, pillType) {
 	}
 
 	// todo: insert plenty of strings and pick one randomly.
-	reply.text("Ehi, prendi la pillola!");
+	context.reply("Ehi, prendi la pillola!");
 
 	// todo: ask this again untill it gets an answer
 }
 
-bot.command("stop", function (msg, reply, next) {
+bot.command("stop", context => {
 	console.log("Stopped from: ", msg.from.id);
-	msg.context.isAsking = ConfigState.NONE;
+	context.session.isAsking = ConfigState.NONE;
 
-	let id = msg.chat.id;
+	let id = context.chat.id;
 
 	let oldTimer = timers[id];
 	if (!oldTimer) {
-		reply.text("Non hai nessun allarme da fermare!");
+		context.reply("Non hai nessun allarme da fermare!");
 		return;
 	}
 
 	oldTimer.clear();
-	reply.text("Ho fermato l'allarme. Puoi ripetere la configurazione con /start.");
-	reply.text("Ciao, a presto!");
+	context.reply("Ho fermato l'allarme. Puoi ripetere la configurazione con /start.");
+	context.reply("Ciao, a presto!");
 });
 
 /* GET home page. */
