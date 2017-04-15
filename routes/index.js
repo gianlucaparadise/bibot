@@ -137,11 +137,11 @@ function stepAlarmTime(msg, reply) {
 function setScheduling(msg, reply) {
 	let startingDateMoment = msg.context.stepDate;
 	// todo: if date is older than now, add 3 weeks
-	let startingDate = startingDateMoment/*.utc()*/;  // todo: is utc needed?
+	let startingDate = startingDateMoment.utc();
 	let startingDayOfYear = startingDate.format("DDD");
 
 	let timeMoment = msg.context.stepAlarmTime;
-	let time = timeMoment/*.utc()*/.format("HH:mm"); // todo: is utc needed?
+	let time = timeMoment.utc().format("HH:mm");
 
 	let pillType = msg.context.stepPillType;
 
@@ -188,7 +188,7 @@ function setScheduling(msg, reply) {
 
 function pillWarning(reply, startingDate, pillType) {
 	if (pillType == "21") {
-		let today = moment(new Date())/*.utc()*/; // todo: is utc needed?
+		let today = moment(new Date()).utc();
 
 		let pastDays = startingDate.diff(today, 'days');
 		// fixme: this number will get bigger and bigger
