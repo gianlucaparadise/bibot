@@ -63,7 +63,7 @@ function askStepDate(context) {
 }
 
 function stepDate(context) {
-	let dateRaw = context.message;
+	let dateRaw = context.message.text;
 	let date = moment(dateRaw, "YYYY-MM-DD");
 
 	if (!date.isValid()) {
@@ -79,7 +79,7 @@ function stepDate(context) {
 }
 
 function stepDateConfirmation(context) {
-	let answerText = context.message.toLowerCase();
+	let answerText = context.message.text.toLowerCase();
 
 	if (answerText == "n" || answerText == "no") {
 		context.reply("Va bene, ricominciamo.");
@@ -103,7 +103,7 @@ function askStepPillType(context) {
 }
 
 function stepPillType(context) {
-	let pillType = context.message;
+	let pillType = context.message.text;
 
 	if (pillType != "21" && pillType != "28") {
 		context.reply("Scusa, non ho capito.");
@@ -122,7 +122,7 @@ function askStepAlarmTime(context) {
 }
 
 function stepAlarmTime(context) {
-	let timeRaw = context.message;
+	let timeRaw = context.message.text;
 	let time = moment(timeRaw, ['h:m a', 'H:m']);
 
 	if (!time.isValid()) {
