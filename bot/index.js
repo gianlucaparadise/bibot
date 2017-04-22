@@ -1,5 +1,5 @@
-import * as settingHelper from './settingHelper';
-import { ConfigState } from './settingHelper';
+const settingHelper = require('./settingHelper');
+const ConfigState = settingHelper.ConfigState;
 
 var moment = require("moment");
 var later = require("later");
