@@ -117,9 +117,15 @@ module.exports = {
 			return;
 		}
 
+		// using correct timezone
+		let adjustedDate = moment.unix(context.message.date);
+		adjustedDate.year(date.year());
+		adjustedDate.month(date.month());
+		adjustedDate.date(date.date());
+
 		context.session.isAsking = ConfigState.DATE_CONFIRMATION;
-		context.session.stepDate = date;
-		let formatted = date.locale("IT").format("dddd, D MMMM YYYY");
+		context.session.stepDate = adjustedDate;
+		let formatted = adjustedDate.locale("IT").format("dddd, D MMMM YYYY");
 		// todo: give options to be selected, instead of this
 		context.reply("Confermi questa data? (S/N) \n" + formatted);
 	},
@@ -158,6 +164,7 @@ module.exports = {
 
 	stepAlarmTime: function (context, timers) {
 		let timeRaw = context.message.text;
+		// use moment.unix(context.message.date) for getting timezone
 		let time = moment(timeRaw, ['h:m a', 'H:m']);
 
 		if (!time.isValid()) {
@@ -165,8 +172,13 @@ module.exports = {
 			return;
 		}
 
+		// using correct timezone
+		let adjustedTime = moment.unix(context.message.date);
+		adjustedTime.hours(time.hours());
+		adjustedTime.minutes(date.minutes());
+
 		context.session.isAsking = ConfigState.COMPLETED;
-		context.session.stepAlarmTime = time;
+		context.session.stepAlarmTime = adjustedTime;
 
 		setScheduling(context, timers);
 	}
