@@ -43,4 +43,7 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
+require('./bot'); // this is bot source code
+require('./utils/keepAwake'); // to keep heroku awake
+
 module.exports = app;
