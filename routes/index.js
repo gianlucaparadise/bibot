@@ -224,6 +224,8 @@ bot.command("stop", context => {
 	context.reply("Ciao, a presto!");
 });
 
+bot.startPolling();
+
 /* GET home page. */
 router.get('/', function (req, res, next) {
 	res.render('index', { title: 'Bibot' });
