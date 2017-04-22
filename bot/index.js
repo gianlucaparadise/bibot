@@ -12,7 +12,7 @@ var timers = {};
 
 bot.use(Telegraf.memorySession());
 
-bot.command('start', context => {
+bot.command("start", context => {
 	console.log("Start from: ", JSON.stringify(context.from));
 
 	// todo: localize strings in english
@@ -43,7 +43,22 @@ bot.command("stop", context => {
 	context.reply("Ciao, a presto!");
 });
 
-bot.on('text', context => {
+bot.command("check", context => {
+	context.session.isAsking = ConfigState.NONE;
+
+	let id = context.chat.id;
+
+	let oldTimer = timers[id];
+	if (!oldTimer) {
+		context.reply("Non hai nessun allarme.");
+	}
+	else {
+		context.reply("Hai un allarme!");
+	}
+
+});
+
+bot.on("text", context => {
 	console.log("Received a text message:", JSON.stringify(context.message));
 	let isAsking = context.session.isAsking || ConfigState.NONE;
 	console.log("isAsking: " + isAsking)
