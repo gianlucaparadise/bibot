@@ -175,7 +175,7 @@ module.exports = {
 		// using correct timezone
 		let adjustedTime = moment.unix(context.message.date);
 		adjustedTime.hours(time.hours());
-		adjustedTime.minutes(date.minutes());
+		adjustedTime.minutes(time.minutes());
 
 		context.session.isAsking = ConfigState.COMPLETED;
 		context.session.stepAlarmTime = adjustedTime;
