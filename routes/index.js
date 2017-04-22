@@ -21,6 +21,8 @@ var timers = {};
 // todo: check if context is unique per user. Set 2 timers at the same time using different users
 //bot.context({ isAsking: ConfigState.NONE });
 
+bot.use(Telegraf.memorySession());
+
 bot.command('start', context => {
 	console.log("Start from: ", JSON.stringify(context.from));
 
