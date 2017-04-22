@@ -22,7 +22,7 @@ bot.command('start', context => {
 });
 
 bot.command("stop", context => {
-	console.log("Stopped from: ", msg.from.id);
+	console.log("Stopped from: ", JSON.stringify(context.from));
 	context.session.isAsking = ConfigState.NONE;
 
 	let id = context.chat.id;
