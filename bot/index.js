@@ -1,8 +1,6 @@
 const settingHelper = require('./settingHelper');
 const ConfigState = settingHelper.ConfigState;
 
-var moment = require("moment");
-var later = require("later");
 const Telegraf = require('telegraf')
 
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
@@ -59,7 +57,7 @@ bot.on('text', context => {
 			break;
 
 		case ConfigState.ALARM_TIME:
-			settingHelper.stepAlarmTime(context);
+			settingHelper.stepAlarmTime(context, timers);
 			break;
 	}
 });
