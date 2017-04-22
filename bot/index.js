@@ -16,7 +16,12 @@ bot.command('start', context => {
 	console.log("Start from: ", JSON.stringify(context.from));
 
 	// todo: localize strings in english
-	context.reply("Ciao! Sono Bibot.");
+	if (context.from.first_name) {
+		context.reply("Ciao " + context.from.first_name + "! Sono Bibot.");
+	}
+	else {
+		context.reply("Ciao! Sono Bibot.");
+	}
 
 	settingHelper.askStepDate(context);
 });
