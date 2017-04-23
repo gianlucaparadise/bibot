@@ -1,5 +1,6 @@
 var moment = require("moment");
-var later = require("later");
+
+const DatabaseWrapper = require('./database-wrapper');
 
 const ConfigState = {
 	NONE: 0,
@@ -48,54 +49,18 @@ function pillWarning(context, startingDate, pillType) {
 	// todo: ask this again untill it gets an answer
 }
 
-function setScheduling(context, timers) {
+function setScheduling(context) {
 	let startingDateMoment = context.session.stepDate;
 	// todo: if date is older than now, add 3 weeks
-	let startingDate = startingDateMoment.utc();
-	let startingDayOfYear = startingDate.format("DDD");
+	let startingDate = startingDateMoment.utc().format("YYYY-MM-DD");
 
 	let timeMoment = context.session.stepAlarmTime;
 	let time = timeMoment.utc().format("HH:mm");
 
 	let pillType = context.session.stepPillType;
 
-	// let sched;
-	// if (pillType == "28") {
-	// 	sched = later.parse.recur().after(startingDayOfYear).dayOfYear().on(time).time();
-	// }
-	// else if (pillType == "21") {
-	// 	// todo: this works only when starting date is after today
-	// 	// check better if this really works
-	// 	sched = later.parse.recur().after(startingDayOfYear).dayOfYear().on(time).time().except().every(4).weekOfYear();
-	// }
-	// else {
-	// 	context.reply("Ho avuto dei problemi mentre impostavo il timer. Puoi ripetere ripartendo da /start?");
-	// 	return;
-	// }
-
-	// // todo: 100 is too much...
-	// var occurrences = later.schedule(sched).next(100);
-	// var schedText = "";
-	// for (var i = 0; i < 100; i++) {
-	// 	schedText += occurrences[i] + '\n';
-	// }
-
-	// context.reply("Ti avviserò questi giorni: \n" + schedText);
-
-	// // todo: ask for confirmation
-
-	let sched = later.parse.recur().after(startingDayOfYear).dayOfYear().on(time).time();
-
-	let timer = later.setInterval(function () {
-		pillWarning(context, startingDate, pillType);
-	}, sched);
-
 	let id = context.chat.id;
-
-	let oldTimer = timers[id];
-	if (oldTimer) oldTimer.clear();
-
-	timers[id] = timer;
+	DatabaseWrapper.insert(id, startingDate, pillType, time);
 
 	context.reply("Promemoria settato!");
 }
@@ -162,7 +127,7 @@ module.exports = {
 		askStepAlarmTime(context);
 	},
 
-	stepAlarmTime: function (context, timers) {
+	stepAlarmTime: function (context) {
 		let timeRaw = context.message.text;
 		// use moment.unix(context.message.date) for getting timezone
 		let time = moment(timeRaw, ['h:m a', 'H:m']);
@@ -180,6 +145,6 @@ module.exports = {
 		context.session.isAsking = ConfigState.COMPLETED;
 		context.session.stepAlarmTime = adjustedTime;
 
-		setScheduling(context, timers);
+		setScheduling(context);
 	}
 };

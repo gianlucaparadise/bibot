@@ -1,11 +1,11 @@
 const settingHelper = require('./settingHelper');
 const ConfigState = settingHelper.ConfigState;
 
-const Telegraf = require('telegraf')
+const DatabaseWrapper = require('./database-wrapper');
+
+const Telegraf = require('telegraf');
 
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
-
-var timers = {};
 
 // todo: check if context is unique per user. Set 2 timers at the same time using different users
 //bot.context({ isAsking: ConfigState.NONE });
@@ -31,31 +31,14 @@ bot.command("stop", context => {
 	context.session.isAsking = ConfigState.NONE;
 
 	let id = context.chat.id;
-
-	let oldTimer = timers[id];
-	if (!oldTimer) {
-		context.reply("Non hai nessun allarme da fermare!");
-		return;
-	}
-
-	oldTimer.clear();
-	context.reply("Ho fermato l'allarme. Puoi ripetere la configurazione con /start.");
-	context.reply("Ciao, a presto!");
+	DatabaseWrapper.remove(id);
 });
 
 bot.command("check", context => {
 	context.session.isAsking = ConfigState.NONE;
 
 	let id = context.chat.id;
-
-	let oldTimer = timers[id];
-	if (!oldTimer) {
-		context.reply("Non hai nessun allarme.");
-	}
-	else {
-		context.reply("Hai un allarme!");
-	}
-
+	DatabaseWrapper.hasReminder(id);
 });
 
 bot.on("text", context => {
@@ -77,9 +60,14 @@ bot.on("text", context => {
 			break;
 
 		case ConfigState.ALARM_TIME:
-			settingHelper.stepAlarmTime(context, timers);
+			settingHelper.stepAlarmTime(context);
 			break;
 	}
 });
+
+// check for reminders
+setInterval(function () {
+	DatabaseWrapper.check();
+}, 30000); // every 30 seconds
 
 bot.startPolling();
