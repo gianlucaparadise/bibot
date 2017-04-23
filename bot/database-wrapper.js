@@ -3,26 +3,29 @@ const moment = require("moment");
 const pg = require('pg');
 pg.defaults.ssl = true;
 
-export function check() {
-	connect(getAllReminders);
-}
+module.exports = {
 
-export function insert(chatId, date, pillType, time) {
-	connect(client => {
-		insertReminder(client, chatId, date, pillType, time);
-	});
-}
+	check: function () {
+		connect(getAllReminders);
+	},
 
-export function hasReminder(chatId) {
-	connect(client => {
-		hasReminderByChatId(client, chatId);
-	});
-}
+	insert: function (chatId, date, pillType, time) {
+		connect(client => {
+			insertReminder(client, chatId, date, pillType, time);
+		});
+	},
 
-export function remove(chatId) {
-	connect(client => {
-		removeReminder(client, chatId);
-	})
+	hasReminder: function (chatId) {
+		connect(client => {
+			hasReminderByChatId(client, chatId);
+		});
+	},
+
+	remove: function (chatId) {
+		connect(client => {
+			removeReminder(client, chatId);
+		})
+	}
 }
 
 function connect(next) {
