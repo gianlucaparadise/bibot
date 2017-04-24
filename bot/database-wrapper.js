@@ -59,6 +59,7 @@ function getAllReminders(client) {
 function insertReminder(client, chatId, firstDayOfPill, pillType, time) {
 	var queryText = 'INSERT INTO pillReminders(chatId, firstDayOfPill, pillType, time, creationDate)' +
 		'VALUES($1, $2, $3, $4, $5) RETURNING id';
+	console.log("inserting " + chatId + " " + firstDayOfPill + " " + pillType + " " + time);
 	client.query(queryText, [chatId, firstDayOfPill, pillType, time, new Date()], function (err, result) {
 		if (err) throw err;
 

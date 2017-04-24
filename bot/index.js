@@ -67,7 +67,6 @@ bot.on("text", context => {
 
 // check for reminders
 setInterval(function () {
-	console.log("checking reminders");
 	DatabaseWrapper.check();
 }, 30000); // every 30 seconds
 
