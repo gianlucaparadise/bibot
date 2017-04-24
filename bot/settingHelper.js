@@ -82,12 +82,6 @@ module.exports = {
 			return;
 		}
 
-		/*// using correct timezone
-		let adjustedDate = moment.unix(context.message.date);
-		adjustedDate.year(date.year());
-		adjustedDate.month(date.month());
-		adjustedDate.date(date.date());*/
-
 		context.session.isAsking = ConfigState.DATE_CONFIRMATION;
 		context.session.stepDate = date;
 		let formatted = date.locale("IT").format("dddd, D MMMM YYYY");
@@ -137,10 +131,22 @@ module.exports = {
 			return;
 		}
 
+		console.log("received time: ");
+		console.log(time);
+
+		console.log("now: ");
+		console.log(moment.unix(context.message.date));
+
 		// using correct timezone
 		let adjustedTime = moment.unix(context.message.date);
 		adjustedTime.hours(time.hours());
 		adjustedTime.minutes(time.minutes());
+
+		console.log("adjusted: ");
+		console.log(adjustedTime);
+
+		console.log("adjusted Utc: ");
+		console.log(adjustedTime.utc());
 
 		context.session.isAsking = ConfigState.COMPLETED;
 		context.session.stepAlarmTime = adjustedTime;

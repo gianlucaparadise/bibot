@@ -68,6 +68,6 @@ bot.on("text", context => {
 // check for reminders
 setInterval(function () {
 	DatabaseWrapper.check();
-}, 30000); // every 30 seconds
+}, 60000); // every minute
 
 bot.startPolling();
