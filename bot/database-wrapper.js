@@ -32,6 +32,7 @@ function connect(next) {
 	pg.connect(process.env.DATABASE_URL, function (err, client) {
 		if (err) {
 			console.log(err);
+			return;
 			//throw err;
 		}
 		console.log("Connected to the database");
@@ -56,6 +57,10 @@ function getAllReminders(client) {
 			/*var hasUrl = _.some(result.rows, function (row) {
 				return compareUrls(row.url, url);
 			});*/
+
+			client.end(function (err) {
+				if (err) console.log(err);
+			});
 		});
 }
 
@@ -66,11 +71,16 @@ function insertReminder(client, chatId, firstDayOfPill, pillType, time) {
 	client.query(queryText, [chatId, firstDayOfPill, pillType, time, new Date()], function (err, result) {
 		if (err) {
 			console.log(err);
+			return;
 			//throw err;
 		}
 
 		var newlyCreatedUserId = result.rows[0].id;
 		console.log("Id inserted row: " + newlyCreatedUserId);
+
+		client.end(function (err) {
+			if (err) console.log(err);
+		});
 	});
 }
 
@@ -79,10 +89,15 @@ function removeReminder(client, chatId) {
 	client.query(queryText, [chatId], function (err, result) {
 		if (err) {
 			console.log(err);
+			return;
 			//throw err;
 		}
 
 		console.log("Removed: " + chatId);
+
+		client.end(function (err) {
+			if (err) console.log(err);
+		});
 	});
 }
 
@@ -101,5 +116,9 @@ function hasReminderByChatId(client, chatId) {
 			/*var hasUrl = _.some(result.rows, function (row) {
 				return compareUrls(row.url, url);
 			});*/
+
+			client.end(function (err) {
+				if (err) console.log(err);
+			});
 		});
 }
