@@ -1,4 +1,5 @@
 var moment = require("moment");
+var momentTimezone = require("moment-timezone");
 
 const DatabaseWrapper = require('./database-wrapper');
 
@@ -124,32 +125,15 @@ module.exports = {
 	stepAlarmTime: function (context) {
 		let timeRaw = context.message.text;
 		// use moment.unix(context.message.date) for getting timezone
-		let time = moment(timeRaw, ['h:m a', 'H:m']);
+		let time = momentTimezone.tz(timeRaw, ['h:m a', 'H:m'], "Europe/Rome");
 
 		if (!time.isValid()) {
 			context.reply("Non riesco a capire l'orario. Puoi scriverlo di nuovo?");
 			return;
 		}
 
-		console.log("received time: ");
-		console.log(time);
-
-		console.log("now: ");
-		console.log(moment.unix(context.message.date));
-
-		// using correct timezone
-		let adjustedTime = moment.unix(context.message.date);
-		adjustedTime.hours(time.hours());
-		adjustedTime.minutes(time.minutes());
-
-		console.log("adjusted: ");
-		console.log(adjustedTime);
-
-		console.log("adjusted Utc: ");
-		console.log(adjustedTime.utc());
-
 		context.session.isAsking = ConfigState.COMPLETED;
-		context.session.stepAlarmTime = adjustedTime;
+		context.session.stepAlarmTime = time;
 
 		setScheduling(context);
 	}
