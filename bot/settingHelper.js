@@ -82,15 +82,15 @@ module.exports = {
 			return;
 		}
 
-		// using correct timezone
+		/*// using correct timezone
 		let adjustedDate = moment.unix(context.message.date);
 		adjustedDate.year(date.year());
 		adjustedDate.month(date.month());
-		adjustedDate.date(date.date());
+		adjustedDate.date(date.date());*/
 
 		context.session.isAsking = ConfigState.DATE_CONFIRMATION;
-		context.session.stepDate = adjustedDate;
-		let formatted = adjustedDate.locale("IT").format("dddd, D MMMM YYYY");
+		context.session.stepDate = date;
+		let formatted = date.locale("IT").format("dddd, D MMMM YYYY");
 		// todo: give options to be selected, instead of this
 		context.reply("Confermi questa data? (S/N) \n" + formatted);
 	},
