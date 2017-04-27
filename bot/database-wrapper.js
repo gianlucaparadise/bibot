@@ -17,9 +17,9 @@ module.exports = {
 		});
 	},
 
-	hasReminder: function (chatId) {
+	hasReminder: function (chatId, onHasReminder) {
 		connect(client => {
-			hasReminderByChatId(client, chatId);
+			hasReminderByChatId(client, chatId, onHasReminder);
 		});
 	},
 
@@ -58,7 +58,7 @@ function getAllReminders(client, onReminder) {
 			console.log(result.rows.length + ' rows were received');
 
 			result.rows.forEach(row => {
-				onReminder(row.chatid, row.firstdayofoill, row.pilltype);
+				onReminder(row.chatid, row.firstdayofpill, row.pilltype);
 			});
 
 			client.end(function (err) {
@@ -105,7 +105,7 @@ function removeReminder(client, chatId) {
 	});
 }
 
-function hasReminderByChatId(client, chatId) {
+function hasReminderByChatId(client, chatId, onHasReminder) {
 	console.log('SELECT * FROM pillReminders WHERE chatId = \'' + chatId + '\';');
 
 	client
@@ -116,10 +116,10 @@ function hasReminderByChatId(client, chatId) {
 		})
 		.on('end', function (result) {
 			console.log(result.rows.length + ' rows were received');
-
-			/*var hasUrl = _.some(result.rows, function (row) {
-				return compareUrls(row.url, url);
-			});*/
+			let reminder = result.rows[0];
+			if (reminder) {
+				onHasReminder(reminder.firstdayofpill, reminder.pilltype, reminder.time);
+			}
 
 			client.end(function (err) {
 				if (err) console.log(err);

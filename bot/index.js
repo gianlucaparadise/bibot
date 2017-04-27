@@ -31,7 +31,9 @@ bot.command("check", context => {
 	context.session.isAsking = ConfigState.NONE;
 
 	let id = context.chat.id;
-	DatabaseWrapper.hasReminder(id);
+	DatabaseWrapper.hasReminder(id, (firstDayOfPill, pillType, time) => {
+		context.reply("Ciao! Hai impostato un avviso per una pillola da " + pillType + " giorni alle ore " + time);
+	});
 });
 
 bot.on("text", context => {
