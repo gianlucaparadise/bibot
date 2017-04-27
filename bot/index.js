@@ -1,16 +1,9 @@
-const settingHelper = require('./settingHelper');
+const settingHelper = require('./setting-helper');
 const ConfigState = settingHelper.ConfigState;
 
 const DatabaseWrapper = require('./database-wrapper');
-
-const Telegraf = require('telegraf');
-
-const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
-
-// todo: check if context is unique per user. Set 2 timers at the same time using different users
-//bot.context({ isAsking: ConfigState.NONE });
-
-bot.use(Telegraf.memorySession());
+const PillNotifier = require('./pill-notifier');
+const bot = require('./telegraf-wrapper').getBot();
 
 bot.command("start", context => {
 	console.log("Start from: ", JSON.stringify(context.from));
@@ -65,9 +58,6 @@ bot.on("text", context => {
 	}
 });
 
-// check for reminders
-setInterval(function () {
-	DatabaseWrapper.check();
-}, 60000); // every minute
+PillNotifier.start();
 
 bot.startPolling();

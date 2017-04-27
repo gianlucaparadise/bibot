@@ -29,27 +29,6 @@ function askStepAlarmTime(context) {
 	context.reply("A che ora vuoi che ti avvisi? Ad esempio: 20:00");
 }
 
-function pillWarning(context, startingDate, pillType) {
-	if (pillType == "21") {
-		let today = moment(new Date()).utc();
-
-		let pastDays = startingDate.diff(today, 'days');
-		// fixme: this number will get bigger and bigger
-		pastDays = Math.abs(pastDays);
-
-		let pillDay = (pastDays % 28) + 1; // this is a number between 1 and 28
-
-		if (pillDay > 21) {
-			return;
-		}
-	}
-
-	// todo: insert plenty of strings and pick one randomly.
-	context.reply("Ehi, prendi la pillola!");
-
-	// todo: ask this again untill it gets an answer
-}
-
 function setScheduling(context) {
 	let startingDateMoment = context.session.stepDate;
 	// todo: if date is older than now, add 3 weeks

@@ -5,8 +5,10 @@ pg.defaults.ssl = true;
 
 module.exports = {
 
-	check: function () {
-		connect(getAllReminders);
+	check: function (onReminder) {
+		connect(client => {
+			getAllReminders(client, onReminder);
+		});
 	},
 
 	insert: function (chatId, date, pillType, time) {
@@ -42,7 +44,7 @@ function connect(next) {
 	});
 }
 
-function getAllReminders(client) {
+function getAllReminders(client, onReminder) {
 	let time = moment().format("HH:mm");
 	console.log('SELECT * FROM pillReminders WHERE time = \'' + time + '\';');
 
@@ -55,9 +57,9 @@ function getAllReminders(client) {
 		.on('end', function (result) {
 			console.log(result.rows.length + ' rows were received');
 
-			/*var hasUrl = _.some(result.rows, function (row) {
-				return compareUrls(row.url, url);
-			});*/
+			result.rows.forEach(row => {
+				onReminder(row);
+			});
 
 			client.end(function (err) {
 				if (err) console.log(err);
