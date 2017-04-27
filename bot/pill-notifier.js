@@ -4,11 +4,11 @@ const DatabaseWrapper = require('./database-wrapper');
 const bot = require('./telegraf-wrapper').getBot();
 const telegram = bot.telegram;
 
-function onReminder(reminder) {
-	let shouldWarn = shouldSendPillWarning(reminder.firstDayOfPill, reminder.pillType);
+function onReminder(chatId, firstDayOfPill, pillType) {
+	let shouldWarn = shouldSendPillWarning(firstDayOfPill, pillType);
 	if (shouldWarn) {
 		// todo: insert plenty of strings and pick one randomly.
-		telegram.sendMessage(reminder.chatId, "Ehi, prendi la pillola!");
+		telegram.sendMessage(chatId, "Ehi, prendi la pillola!");
 
 		// todo: ask this again untill it gets an answer
 	}
@@ -40,6 +40,7 @@ function shouldSendPillWarning(startingDateRaw, pillType) {
 
 module.exports = {
 	start: function () {
+		console.log("notifier started");
 		// check for reminders
 		setInterval(function () {
 			DatabaseWrapper.check(onReminder);

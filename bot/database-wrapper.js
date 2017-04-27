@@ -58,7 +58,7 @@ function getAllReminders(client, onReminder) {
 			console.log(result.rows.length + ' rows were received');
 
 			result.rows.forEach(row => {
-				onReminder(row);
+				onReminder(row.chatid, row.firstdayofoill, row.pilltype);
 			});
 
 			client.end(function (err) {
@@ -97,6 +97,7 @@ function removeReminder(client, chatId) {
 		}
 
 		console.log("Removed: " + chatId);
+		console.log(result);
 
 		client.end(function (err) {
 			if (err) console.log(err);
