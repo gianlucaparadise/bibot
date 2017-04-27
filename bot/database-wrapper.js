@@ -29,6 +29,7 @@ module.exports = {
 }
 
 function connect(next) {
+	console.log("connecting");
 	pg.connect(process.env.DATABASE_URL, function (err, client) {
 		if (err) {
 			console.log(err);
