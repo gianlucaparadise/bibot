@@ -32,6 +32,7 @@ bot.command("check", context => {
 
 	let id = context.chat.id;
 	DatabaseWrapper.hasReminder(id, (firstDayOfPill, pillType, time) => {
+		// todo: change 'time' timezone
 		context.reply("Ciao! Hai impostato un avviso per una pillola da " + pillType + " giorni alle ore " + time);
 	});
 });
