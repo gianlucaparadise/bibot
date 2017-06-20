@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "pm2 start ./bin/www --name bibot"
+    "start": "pm2 start ./bin/www --name bibot",
+    "restart": "pm2 restart bibot"
   },
   "dependencies": {
     "body-parser": "~1.15.2",
