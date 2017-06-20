@@ -44,6 +44,6 @@ app.use(function (err, req, res, next) {
 });
 
 require('./bot'); // this is bot source code
-require('./utils/keepAwake'); // to keep heroku awake
+//require('./utils/keepAwake'); // to keep heroku awake
 
 module.exports = app;

@@ -16,7 +16,6 @@
     "moment": "^2.17.1",
     "moment-timezone": "^0.5.13",
     "morgan": "~1.7.0",
-    "pg": "^6.1.5",
     "serve-favicon": "~2.3.0",
     "telegraf": "^3.6.7"
   },
