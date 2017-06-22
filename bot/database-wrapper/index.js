@@ -30,6 +30,7 @@ function getAllReminders(onReminder) {
 
 	PillReminder
 		.find({ time: time })
+		.exec()
 		.then(reminders => {
 			console.log(JSON.stringify(reminders));
 			console.log(reminders.length + ' rows were received');
