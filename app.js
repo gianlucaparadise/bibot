@@ -17,7 +17,7 @@ app.set('view engine', 'jade');
 
 //connect to DB
 mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://127.0.0.1:27017/bibot");
+mongoose.connect(process.env.DB_URL);
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 
 // uncomment after placing your favicon in /public
