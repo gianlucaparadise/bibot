@@ -17,6 +17,7 @@ app.set('view engine', 'jade');
 
 //connect to DB
 mongoose.Promise = global.Promise;
+console.log("db url: " + process.env.DB_URL);
 mongoose.connect(process.env.DB_URL);
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 
