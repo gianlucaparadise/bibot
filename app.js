@@ -15,6 +15,11 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+//connect to DB
+mongoose.Promise = global.Promise;
+mongoose.connect(process.env.DB_URL, { auth: { authdb: "admin" } });
+mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
+
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
@@ -43,13 +48,6 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-//connect to DB
-mongoose.Promise = global.Promise;
-console.log("db url: " + process.env.DB_URL);
-console.log("db url: " + process.env.TELEGRAM_TOKEN);
-mongoose.connect(process.env.DB_URL);
-mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 
 require('./bot'); // this is bot source code
 //require('./utils/keepAwake'); // to keep heroku awake
