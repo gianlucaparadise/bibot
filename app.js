@@ -17,7 +17,8 @@ app.set('view engine', 'jade');
 
 //connect to DB
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.DB_URL, { auth: { authdb: "bibot" } });
+console.log("db url: " + process.env.DB_URL);
+mongoose.connect(process.env.DB_URL);
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 
 // uncomment after placing your favicon in /public
