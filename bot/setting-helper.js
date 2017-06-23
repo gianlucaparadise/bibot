@@ -2,6 +2,7 @@ var moment = require("moment");
 var momentTimezone = require("moment-timezone");
 
 const DatabaseWrapper = require('./database-wrapper');
+const Extra = require('./telegraf-wrapper').getExtra();
 
 const ConfigState = {
 	NONE: 0,
@@ -21,7 +22,11 @@ function askStepDate(context) {
 function askStepPillType(context) {
 	context.session.isAsking = ConfigState.PILL_TYPE;
 	context.session.stepDateConfirmation = true;
-	context.reply("Prendi una pillola da 21 o da 28 giorni? (21/28)");
+	context.reply("Prendi una pillola da 21 o da 28 giorni? (21/28)", Extra.HTML().markup((m) =>
+		m.inlineKeyboard([
+			m.callbackButton('21', 'twentyone'),
+			m.callbackButton('28', 'twentyeight')
+		])));
 }
 
 function askStepAlarmTime(context) {

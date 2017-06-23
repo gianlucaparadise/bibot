@@ -18,5 +18,10 @@ module.exports = {
 		}
 
 		return bot;
+	},
+
+	getExtra: function () {
+		console.log(JSON.stringify(Telegraf));
+		return Telegraf.Extra;
 	}
 }

@@ -26,6 +26,7 @@ bot.command("stop", context => {
 	let id = context.chat.id;
 	DatabaseWrapper.remove(id, () => {
 		context.reply("Hai rimosso correttamente il reminder");
+		context.reply("Puoi registrarne un altro con il comando /start");
 		context.reply("Arrivederci!");
 	});
 });
@@ -39,6 +40,7 @@ bot.command("check", context => {
 		context.reply("Ciao! Hai impostato un avviso per una pillola da " + pillType + " giorni alle ore " + time);
 	}, () => {
 		context.reply("Ciao! Non hai nessun reminder salvato");
+		context.reply("Puoi registrarne uno con il comando /start!");
 	});
 });
 
