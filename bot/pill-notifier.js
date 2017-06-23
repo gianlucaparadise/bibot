@@ -45,5 +45,7 @@ module.exports = {
 		setInterval(function () {
 			DatabaseWrapper.check(onReminder);
 		}, 60000); // every minute
+
+		DatabaseWrapper.check(onReminder); // I check this minute
 	}
 }

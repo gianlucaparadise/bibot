@@ -11,22 +11,18 @@ module.exports = {
 		insertReminder(chatId, date, pillType, time);
 	},
 
-	hasReminder: function (chatId, onHasReminder) {
-		hasReminderByChatId(chatId, onHasReminder);
+	hasReminder: function (chatId, onHasReminder, onNoReminder) {
+		hasReminderByChatId(chatId, onHasReminder, onNoReminder);
 	},
 
-	remove: function (chatId) {
-		removeReminder(chatId);
+	remove: function (chatId, onRemoved) {
+		removeReminder(chatId, onRemoved);
 	}
-}
-
-function connect(next) {
-	console.log("connecting");
 }
 
 function getAllReminders(onReminder) {
 	let time = moment().format("HH:mm");
-	console.log('SELECT * FROM pillReminders WHERE time = \'' + time + '\';');
+	console.log('find by time: \'' + time + '\';');
 
 	PillReminder
 		.find({ time: time })
@@ -43,8 +39,6 @@ function getAllReminders(onReminder) {
 }
 
 function insertReminder(chatId, firstDayOfPill, pillType, time) {
-	var queryText = 'INSERT INTO pillReminders(chatId, firstDayOfPill, pillType, time, creationDate)' +
-		'VALUES($1, $2, $3, $4, $5) RETURNING id';
 	console.log("inserting " + chatId + " " + firstDayOfPill + " " + pillType + " " + time);
 
 	let reminder = new PillReminder({
@@ -56,24 +50,28 @@ function insertReminder(chatId, firstDayOfPill, pillType, time) {
 
 	reminder
 		.save(saved => {
-			let newlyCreatedId = saved.chatId;
-			console.log("Id inserted row: " + newlyCreatedId);
+			console.log("inserted");
+			console.log(JSON.stringify(saved));
+			//let newlyCreatedId = saved.chatId;
+			//console.log("Id inserted row: " + newlyCreatedId);
 		})
 		.catch(ex => console.log(ex));
 }
 
-function removeReminder(chatId) {
-	//var queryText = 'DELETE FROM pillReminders WHERE chatId = $1';
-
+function removeReminder(chatId, onRemoved) {
 	console.log("Deleting: " + chatId);
+
 	PillReminder
 		.remove({ chatId: chatId })
-		.then(() => console.log("Deleted: " + chatId))
+		.then(() => {
+			console.log("Deleted: " + chatId);
+			onRemoved();
+		})
 		.catch(ex => console.log(ex));
 }
 
-function hasReminderByChatId(chatId, onHasReminder) {
-	console.log('SELECT * FROM pillReminders WHERE chatId = \'' + chatId + '\';');
+function hasReminderByChatId(chatId, onHasReminder, onNoReminder) {
+	console.log('find by chatId: \'' + chatId + '\';');
 
 	PillReminder
 		.find({ chatId: chatId })
@@ -84,6 +82,9 @@ function hasReminderByChatId(chatId, onHasReminder) {
 			let reminder = reminders[0];
 			if (reminder) {
 				onHasReminder(reminder.firstDayOfPill, reminder.pillType, reminder.time);
+			}
+			else {
+				onNoReminder();
 			}
 		})
 		.catch(ex => console.log(ex));

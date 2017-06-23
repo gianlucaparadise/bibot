@@ -24,7 +24,10 @@ bot.command("stop", context => {
 	context.session.isAsking = ConfigState.NONE;
 
 	let id = context.chat.id;
-	DatabaseWrapper.remove(id);
+	DatabaseWrapper.remove(id, () => {
+		context.reply("Hai rimosso correttamente il reminder");
+		context.reply("Arrivederci!");
+	});
 });
 
 bot.command("check", context => {
@@ -34,6 +37,8 @@ bot.command("check", context => {
 	DatabaseWrapper.hasReminder(id, (firstDayOfPill, pillType, time) => {
 		// todo: change 'time' timezone
 		context.reply("Ciao! Hai impostato un avviso per una pillola da " + pillType + " giorni alle ore " + time);
+	}, () => {
+		context.reply("Ciao! Non hai nessun reminder salvato");
 	});
 });
 
