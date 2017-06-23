@@ -47,6 +47,7 @@ app.use(function (err, req, res, next) {
 //connect to DB
 mongoose.Promise = global.Promise;
 console.log("db url: " + process.env.DB_URL);
+console.log("db url: " + process.env.TELEGRAM_TOKEN);
 mongoose.connect(process.env.DB_URL);
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 
