@@ -4,7 +4,7 @@ module.exports = {
 	getCalendar: function () {
 		return Extra.HTML().markup((m) => {
 			let page = [];
-			addDays(page);
+			addDays(page, m);
 			// m.inlineKeyboard([
 			// 	[m.callbackButton("1", "calendar-telegram-1"), m.callbackButton("2", "calendar-telegram-2")],
 			// 	[m.callbackButton("3", "calendar-telegram-3"), m.callbackButton("4", "calendar-telegram-4")]
