@@ -1,11 +1,15 @@
 const Extra = require('telegraf').Extra;
 
+const weekDayNames = ["S", "M", "T", "W", "T", "F", "S"];
+// const monthNames = ["January", "February", "March", "April", "May", "June",
+// 	"July", "August", "September", "October", "November", "December"];
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
 module.exports = {
 	getCalendar: function () {
 		return Extra.HTML().markup((m) => {
-			let page = [];
-			addDays(page, m);
-			return m.inlineKeyboard(page);
+			return m.inlineKeyboard(getPage(m, new Date()));
 		});
 	},
 
@@ -16,11 +20,33 @@ module.exports = {
 				onDateSelected(context, date);
 			}
 		});
+
+		bot.action("calendar-telegram-prev", context => {
+			context.reply("prev");
+		});
+
+		bot.action("calendar-telegram-next", context => {
+			context.reply("next");
+		});
 	}
 }
 
-function addDays(page, m) {
-	let date = new Date();
+function addHeader(page, m, date) {
+	let monthName = monthNames[date.getMonth()];
+	let year = date.getFullYear();
+
+	//page.push([m.callbackButton(monthName + " " + year, "calendar-telegram-ignore")]);
+	page.push([
+		m.callbackButton("<", "calendar-telegram-prev"),
+		m.callbackButton(monthName + " " + year, "calendar-telegram-ignore"),
+		m.callbackButton(">", "calendar-telegram-next")
+	]);
+
+	page.push(weekDayNames.map(e => m.callbackButton(e, "calendar-telegram-ignore")));
+}
+
+function addDays(page, m, date) {
+	//let date = new Date();
 	let maxDays = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
 
 	let currentRow = new Array(7).fill(m.callbackButton(" ", "calendar-telegram-ignore"));
@@ -36,6 +62,13 @@ function addDays(page, m) {
 			currentRow = new Array(7).fill(m.callbackButton(" ", "calendar-telegram-ignore"));
 		}
 	}
+}
+
+function getPage(m, date) {
+	let page = [];
+	addHeader(page, m, date);
+	addDays(page, m, date);
+	return page;
 }
 
 function toYyyymmdd(date) {
