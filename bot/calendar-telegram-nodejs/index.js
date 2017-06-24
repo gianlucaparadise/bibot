@@ -6,11 +6,11 @@ module.exports = {
 			let page = [];
 			addDays(page, m);
 			console.log(page);
-			m.inlineKeyboard([
-				[m.callbackButton("1", "calendar-telegram-1"), m.callbackButton("2", "calendar-telegram-2")],
-				[m.callbackButton("3", "calendar-telegram-3"), m.callbackButton("4", "calendar-telegram-4")]
-			]);
-			//m.inlineKeyboard(page);
+			// m.inlineKeyboard([
+			// 	[m.callbackButton("1", "calendar-telegram-1"), m.callbackButton("2", "calendar-telegram-2")],
+			// 	[m.callbackButton("3", "calendar-telegram-3"), m.callbackButton("4", "calendar-telegram-4")]
+			// ]);
+			return m.inlineKeyboard(page);
 		});
 	},
 
