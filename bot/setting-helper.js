@@ -9,7 +9,7 @@ const calendar = require('./calendar-telegram-nodejs');
 const ConfigState = {
 	NONE: 0,
 	DATE: 1,
-	DATE_CONFIRMATION: 2,
+	DATE_CONFIRMATION: 2, // deprecated
 	PILL_TYPE: 3,
 	ALARM_TIME: 4,
 	COMPLETED: 5
@@ -68,30 +68,31 @@ module.exports = {
 			return;
 		}
 
-		context.session.isAsking = ConfigState.DATE_CONFIRMATION;
+		//context.session.isAsking = ConfigState.DATE_CONFIRMATION;
 		context.session.stepDate = date;
-		let formatted = date.locale("IT").format("dddd, D MMMM YYYY");
-		// todo: give options to be selected, instead of this
-		context.reply("Confermi questa data? (S/N) \n" + formatted);
-	},
-
-	stepDateConfirmation: function (context, text) {
-		let answerText = text.toLowerCase();
-
-		if (answerText == "n" || answerText == "no") {
-			context.reply("Va bene, ricominciamo.");
-			askStepDate(context);
-			return;
-		}
-
-		if (answerText != "s" && answerText != "si") {
-			context.reply("Lo prendo come un no.");
-			askStepDate(context);
-			return;
-		}
-
 		askStepPillType(context);
+
+		//let formatted = date.locale("IT").format("dddd, D MMMM YYYY");
+		//context.reply("Confermi questa data? (S/N) \n" + formatted);
 	},
+
+	// stepDateConfirmation: function (context, text) {
+	// 	let answerText = text.toLowerCase();
+
+	// 	if (answerText == "n" || answerText == "no") {
+	// 		context.reply("Va bene, ricominciamo.");
+	// 		askStepDate(context);
+	// 		return;
+	// 	}
+
+	// 	if (answerText != "s" && answerText != "si") {
+	// 		context.reply("Lo prendo come un no.");
+	// 		askStepDate(context);
+	// 		return;
+	// 	}
+
+	// 	askStepPillType(context);
+	// },
 
 	stepPillType: function (context, text) {
 		let pillType = text;

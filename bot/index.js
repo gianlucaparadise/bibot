@@ -7,11 +7,6 @@ const bot = require('./telegraf-wrapper').getBot();
 
 const calendar = require('./calendar-telegram-nodejs');
 
-// bot.command("calendar", context => {
-// 	console.log("calendar from: ", JSON.stringify(context.from));
-// 	context.reply("Yo", calendar.getCalendar());
-// });
-
 calendar.setDateListener(bot, (context, date) => {
 	processMessage(context, date);
 });
@@ -79,9 +74,9 @@ function processMessage(context, text) {
 			settingHelper.stepDate(context, text);
 			break;
 
-		case ConfigState.DATE_CONFIRMATION:
-			settingHelper.stepDateConfirmation(context, text);
-			break;
+		// case ConfigState.DATE_CONFIRMATION:
+		// 	settingHelper.stepDateConfirmation(context, text);
+		// 	break;
 
 		case ConfigState.PILL_TYPE:
 			settingHelper.stepPillType(context, text);
