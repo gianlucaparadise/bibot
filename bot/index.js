@@ -4,13 +4,20 @@ const ConfigState = settingHelper.ConfigState;
 const DatabaseWrapper = require('./database-wrapper');
 const PillNotifier = require('./pill-notifier');
 const bot = require('./telegraf-wrapper').getBot();
+const Extra = require('telegraf').Extra;
 const calendar = require('./calendar-telegram-nodejs');
 
 //console.log(JSON.stringify(calendar.getCalendar()));
 
 bot.command("calendar", context => {
 	console.log("calendar from: ", JSON.stringify(context.from));
-	let cal = calendar.getCalendar()
+	let cal = Extra.HTML().markup((m) => {
+		m.inlineKeyboard([
+			[m.callbackButton("1", "calendar-telegram-1"), m.callbackButton("2", "calendar-telegram-2")],
+			[m.callbackButton("3", "calendar-telegram-3"), m.callbackButton("4", "calendar-telegram-4")]
+		]);
+		//m.inlineKeyboard(page);
+	});
 	console.log(JSON.stringify(cal));
 	context.reply("Yo", cal);
 });
