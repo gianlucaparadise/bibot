@@ -11,9 +11,10 @@ bot.command("calendar", context => {
 	console.log("calendar from: ", JSON.stringify(context.from));
 	context.reply("Yo", Extra.HTML().markup((m) =>
 		m.inlineKeyboard([
-			m.callbackButton("21", "twentyone"),
-			m.callbackButton("28", "twentyeight")
-		])));
+			[m.callbackButton("1", "one"), m.callbackButton("2", "two")],
+			[m.callbackButton("1", "one"), m.callbackButton("2", "two")]
+		])
+	));
 });
 
 bot.command("start", context => {
