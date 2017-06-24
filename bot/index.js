@@ -6,6 +6,8 @@ const PillNotifier = require('./pill-notifier');
 const bot = require('./telegraf-wrapper').getBot();
 const calendar = require('./calendar-telegram-nodejs');
 
+//console.log(JSON.stringify(calendar.getCalendar()));
+
 bot.command("calendar", context => {
 	console.log("calendar from: ", JSON.stringify(context.from));
 	let cal = calendar.getCalendar()
