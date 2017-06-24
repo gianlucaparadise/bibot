@@ -7,6 +7,17 @@ const bot = require('./telegraf-wrapper').getBot();
 
 const Markup = require('telegraf').Markup;
 
+bot.command("calendar", context => {
+	console.log("calendar: " + JSON.stringify(context));
+	context.reply("Yo", Markup
+		.keyboard([
+			['🔍 Search', '😎 Popular'],         // Row1 with 2 buttons
+			['☸ Setting', '📞 Feedback'],       // Row2 with 2 buttons
+			['📢 Ads', '⭐️ Rate us', '👥 Share'] // Row3 with 3 buttons
+		])
+	);
+});
+
 bot.command("start", context => {
 	console.log("Start from: ", JSON.stringify(context.from));
 
@@ -83,16 +94,6 @@ function processMessage(context, text) {
 			break;
 	}
 }
-
-bot.command("calendar", context => {
-	context.reply("Yo", Markup
-		.keyboard([
-			['🔍 Search', '😎 Popular'],         // Row1 with 2 buttons
-			['☸ Setting', '📞 Feedback'],       // Row2 with 2 buttons
-			['📢 Ads', '⭐️ Rate us', '👥 Share'] // Row3 with 3 buttons
-		])
-	);
-});
 
 PillNotifier.start();
 
