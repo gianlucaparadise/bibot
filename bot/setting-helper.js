@@ -22,10 +22,10 @@ function askStepDate(context) {
 function askStepPillType(context) {
 	context.session.isAsking = ConfigState.PILL_TYPE;
 	context.session.stepDateConfirmation = true;
-	context.reply("Prendi una pillola da 21 o da 28 giorni? (21/28)", Extra.HTML().markup((m) =>
+	context.reply("Prendi una pillola da 21 o da 28 giorni?", Extra.HTML().markup((m) =>
 		m.inlineKeyboard([
-			m.callbackButton('21', 'twentyone'),
-			m.callbackButton('28', 'twentyeight')
+			m.callbackButton("21", "twentyone"),
+			m.callbackButton("28", "twentyeight")
 		])));
 }
 

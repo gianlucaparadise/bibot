@@ -45,6 +45,22 @@ bot.command("check", context => {
 });
 
 bot.on("text", context => {
+	processMessage(context);
+});
+
+bot.action("twentyone", context => {
+	console.log("Action twentyone:", JSON.stringify(context.message));
+	context.message.text = "21";
+	processMessage(context);
+});
+
+bot.action("twentyeight", context => {
+	console.log("Action twentyeight:", JSON.stringify(context.message));
+	context.message.text = "28";
+	processMessage(context);
+});
+
+function processMessage(context) {
 	console.log("Received a text message:", JSON.stringify(context.message));
 	let isAsking = context.session.isAsking || ConfigState.NONE;
 	console.log("isAsking: " + isAsking)
@@ -66,7 +82,7 @@ bot.on("text", context => {
 			settingHelper.stepAlarmTime(context);
 			break;
 	}
-});
+}
 
 PillNotifier.start();
 
