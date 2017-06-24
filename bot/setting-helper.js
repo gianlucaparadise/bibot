@@ -22,7 +22,6 @@ function askStepDate(context) {
 
 function askStepPillType(context) {
 	context.session.isAsking = ConfigState.PILL_TYPE;
-	context.session.stepDateConfirmation = true;
 	context.reply("Prendi una pillola da 21 o da 28 giorni?", Extra.HTML().markup((m) =>
 		m.inlineKeyboard([
 			m.callbackButton("21", "twentyone"),
@@ -38,7 +37,7 @@ function askStepAlarmTime(context) {
 function setScheduling(context) {
 	let startingDateMoment = context.session.stepDate;
 	// todo: if date is older than now, add 3 weeks
-	let startingDate = startingDateMoment.utc().format("YYYY-MM-DD");
+	let startingDate = startingDateMoment ? startingDateMoment.utc().format("YYYY-MM-DD") : "";
 
 	let timeMoment = context.session.stepAlarmTime;
 	let time = timeMoment.utc().format("HH:mm");
@@ -55,8 +54,8 @@ module.exports = {
 
 	ConfigState: ConfigState,
 
-	askStepDate: function (context) {
-		askStepDate(context);
+	askStepPillType: function (context) {
+		askStepPillType(context);
 	},
 
 	stepDate: function (context, text) {
@@ -70,7 +69,7 @@ module.exports = {
 		}
 
 		context.session.stepDate = date;
-		askStepPillType(context);
+		askStepAlarmTime(context);
 	},
 
 	stepPillType: function (context, text) {
@@ -84,7 +83,12 @@ module.exports = {
 
 		context.session.stepPillType = pillType;
 
-		askStepAlarmTime(context);
+		if (pillType == "21") {
+			askStepDate(context);
+		}
+		else {
+			askStepAlarmTime(context);
+		}
 	},
 
 	stepAlarmTime: function (context, text) {

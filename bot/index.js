@@ -22,7 +22,7 @@ bot.command("start", context => {
 		context.reply("Ciao! Sono Bibot.");
 	}
 
-	settingHelper.askStepDate(context);
+	settingHelper.askStepPillType(context);
 });
 
 bot.command("stop", context => {

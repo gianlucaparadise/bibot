@@ -6,6 +6,10 @@ const weekDayNames = ["S", "M", "T", "W", "T", "F", "S"];
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
 	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+// todo: handle localization
+// todo: handle max day and min day
+// todo: handle starting weekday
+
 module.exports = {
 	getCalendar: function () {
 		return getCalendarMarkup(new Date());
