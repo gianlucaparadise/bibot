@@ -20,7 +20,6 @@ module.exports = {
 		});
 
 		bot.action("calendar-telegram-prev", context => {
-			context.reply("prev");
 			context.editMessageReplyMarkup(getCalendarMarkup(new Date(2017, 2, 1)));
 		});
 
@@ -30,7 +29,7 @@ module.exports = {
 
 		bot.action("calendar-telegram-ignore", context => { });
 	}
-}
+};
 
 function getCalendarMarkup(date) {
 	return Extra.HTML().markup((m) => {
