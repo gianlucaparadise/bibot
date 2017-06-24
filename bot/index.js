@@ -49,14 +49,14 @@ bot.on("text", context => {
 });
 
 bot.action("twentyone", context => {
-	console.log("Action twentyone:", JSON.stringify(context.message));
-	context.message.text = "21";
+	console.log("Action twentyone");
+	context.message = { text: "21" };
 	processMessage(context);
 });
 
 bot.action("twentyeight", context => {
-	console.log("Action twentyeight:", JSON.stringify(context.message));
-	context.message.text = "28";
+	console.log("Action twentyeight");
+	context.message = { text: "28" };
 	processMessage(context);
 });
 
