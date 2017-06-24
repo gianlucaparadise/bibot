@@ -20,8 +20,8 @@ module.exports = {
 		});
 
 		bot.action("calendar-telegram-prev", context => {
-			context.reply("prev", getCalendarMarkup(new Date(2017, 2, 1)));
-			//context.editMessageReplyMarkup(getCalendarMarkup(new Date(2017, 2, 1)));
+			//context.reply("prev", getCalendarMarkup(new Date(2017, 2, 1)));
+			context.editMessageText("pick a date", getCalendarMarkup(new Date(2017, 2, 1)));
 		});
 
 		bot.action("calendar-telegram-next", context => {
