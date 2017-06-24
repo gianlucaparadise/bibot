@@ -1,14 +1,21 @@
 var moment = require("moment");
 
 const DatabaseWrapper = require('./database-wrapper');
-const bot = require('./telegraf-wrapper').getBot();
+const telegrafWrapper = require('./telegraf-wrapper');
+const bot = telegrafWrapper.getBot();
+const Extra = telegrafWrapper.getExtra();
 const telegram = bot.telegram;
 
 function onReminder(chatId, firstDayOfPill, pillType) {
 	let shouldWarn = shouldSendPillWarning(firstDayOfPill, pillType);
 	if (shouldWarn) {
 		// todo: insert plenty of strings and pick one randomly.
-		telegram.sendMessage(chatId, "Ehi, prendi la pillola!");
+		telegram.sendMessage(chatId, "Ehi, prendi la pillola!", Extra.HTML().markup((m) =>
+			m.inlineKeyboard([
+				m.callbackButton("Ritarda", "pill-remind-later"),
+				m.callbackButton("Presa!", "pill-taken")
+			])
+		));
 
 		// todo: ask this again untill it gets an answer
 	}
@@ -16,9 +23,9 @@ function onReminder(chatId, firstDayOfPill, pillType) {
 
 function shouldSendPillWarning(startingDateRaw, pillType) {
 	console.log("shouldWarn: " + startingDateRaw + " " + pillType);
-	let startingDate = moment(startingDateRaw);
 
 	if (pillType == "21") {
+		let startingDate = moment(startingDateRaw);
 		let today = moment(new Date()).utc();
 
 		let pastDays = startingDate.diff(today, 'days');

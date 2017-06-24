@@ -89,6 +89,18 @@ function processMessage(context, text) {
 	}
 }
 
+bot.action("pill-taken", context => {
+	console.log("pill-taken");
+	context.reply("Ottimo!");
+	let id = context.chat.id;
+	DatabaseWrapper.setAnswered(id);
+});
+
+bot.action("pill-remind-later", context => {
+	console.log("pill-remind-later");
+	context.reply("todo");
+});
+
 PillNotifier.start();
 
 bot.startPolling();

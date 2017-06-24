@@ -7,6 +7,10 @@ module.exports = {
 		getAllReminders(onReminder);
 	},
 
+	setAnswered: function (chatId) {
+		setAnswered(chatId);
+	},
+
 	insert: function (chatId, date, pillType, time) {
 		insertReminder(chatId, date, pillType, time);
 	},
@@ -32,10 +36,26 @@ function getAllReminders(onReminder) {
 			console.info(reminders.length + ' rows were received');
 
 			reminders.forEach(reminder => {
-				onReminder(reminder.chatId, reminder.firstDayOfPill, reminder.pillType);
+				reminder.isWaitingForAnswer = true;
+				reminder
+					.save()
+					.then((a) => {
+						console.log("isWaitingForAnswer saved " + JSON.stringify(a));
+						onReminder(reminder.chatId, reminder.firstDayOfPill, reminder.pillType);
+					});
 			}, this);
 		})
 		.catch(ex => console.log(ex));
+}
+
+function setAnswered(chatId) {
+	console.log("setting aswered for " + chatId);
+	PillReminder
+		.update({ chatId: chatId }, { isWaitingForAnswer: false })
+		.then((a) => {
+			console.log("set aswered for " + chatId + " " + JSON.stringify(a));
+		})
+		.catch((ex) => console.log(ex));
 }
 
 function insertReminder(chatId, firstDayOfPill, pillType, time) {
@@ -63,7 +83,8 @@ function removeReminder(chatId, onRemoved) {
 
 	PillReminder
 		.remove({ chatId: chatId })
-		.then(() => {
+		.then((result) => {
+			console.log(JSON.stringify(result));
 			console.log("Deleted: " + chatId);
 			onRemoved();
 		})
