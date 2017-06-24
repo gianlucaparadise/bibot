@@ -4,15 +4,16 @@ const ConfigState = settingHelper.ConfigState;
 const DatabaseWrapper = require('./database-wrapper');
 const PillNotifier = require('./pill-notifier');
 const bot = require('./telegraf-wrapper').getBot();
+
 const calendar = require('./calendar-telegram-nodejs');
 
-bot.command("calendar", context => {
-	console.log("calendar from: ", JSON.stringify(context.from));
-	context.reply("Yo", calendar.getCalendar());
-});
+// bot.command("calendar", context => {
+// 	console.log("calendar from: ", JSON.stringify(context.from));
+// 	context.reply("Yo", calendar.getCalendar());
+// });
 
 calendar.setDateListener(bot, (context, date) => {
-	context.reply(date);
+	processMessage(context, date);
 });
 
 bot.command("start", context => {

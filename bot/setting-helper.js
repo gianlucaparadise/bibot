@@ -4,6 +4,8 @@ var momentTimezone = require("moment-timezone");
 const DatabaseWrapper = require('./database-wrapper');
 const Extra = require('./telegraf-wrapper').getExtra();
 
+const calendar = require('./calendar-telegram-nodejs');
+
 const ConfigState = {
 	NONE: 0,
 	DATE: 1,
@@ -14,9 +16,8 @@ const ConfigState = {
 };
 
 function askStepDate(context) {
-	let today = moment().format("YYYY-MM-DD");
 	context.session.isAsking = ConfigState.DATE;
-	context.reply("In che giorno hai iniziato a prendere la pillola? Ad esempio: " + today);
+	context.reply("In che giorno hai iniziato a prendere la pillola?", calendar.getCalendar());
 }
 
 function askStepPillType(context) {
