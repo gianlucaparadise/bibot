@@ -63,8 +63,9 @@ module.exports = {
 		let date = moment(dateRaw, "YYYY-MM-DD");
 
 		if (!date.isValid()) {
-			context.reply("La data è errata. Puoi reinserirla?");
-			askStepDate(context);
+			context
+				.reply("La data è errata. Puoi reinserirla?")
+				.then(() => askStepDate(context));
 			return;
 		}
 
@@ -76,8 +77,9 @@ module.exports = {
 		let pillType = text;
 
 		if (pillType != "21" && pillType != "28") {
-			context.reply("Scusa, non ho capito.");
-			askStepPillType(context);
+			context
+				.reply("Scusa, non ho capito.")
+				.then(() => askStepPillType(context));
 			return;
 		}
 

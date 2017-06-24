@@ -15,14 +15,17 @@ bot.command("start", context => {
 	console.log("Start from: ", JSON.stringify(context.from));
 
 	// todo: localize strings in english
+	let text;
 	if (context.from.first_name) {
-		context.reply("Ciao " + context.from.first_name + "! Sono Bibot.");
+		text = "Ciao " + context.from.first_name + "! Sono Bibot.";
 	}
 	else {
-		context.reply("Ciao! Sono Bibot.");
+		text = "Ciao! Sono Bibot.";
 	}
 
-	settingHelper.askStepPillType(context);
+	context
+		.reply(text)
+		.then(() => settingHelper.askStepPillType(context));
 });
 
 bot.command("stop", context => {
@@ -31,9 +34,10 @@ bot.command("stop", context => {
 
 	let id = context.chat.id;
 	DatabaseWrapper.remove(id, () => {
-		context.reply("Hai rimosso correttamente il reminder");
-		context.reply("Puoi registrarne un altro con il comando /start");
-		context.reply("Arrivederci!");
+		context
+			.reply("Hai rimosso correttamente il reminder")
+			.then(() => context.reply("Puoi registrarne un altro con il comando /start"))
+			.then(() => context.reply("Arrivederci!"));
 	});
 });
 
@@ -45,8 +49,9 @@ bot.command("check", context => {
 		// todo: change 'time' timezone
 		context.reply("Ciao! Hai impostato un avviso per una pillola da " + pillType + " giorni alle ore " + time);
 	}, () => {
-		context.reply("Ciao! Non hai nessun reminder salvato");
-		context.reply("Puoi registrarne uno con il comando /start!");
+		context
+			.reply("Ciao! Non hai nessun reminder salvato")
+			.then(() => context.reply("Puoi registrarne uno con il comando /start!"));
 	});
 });
 
