@@ -40,7 +40,7 @@ function shouldSendPillWarning(startingDateRaw, pillType) {
 
 module.exports = {
 	start: function () {
-		console.log("notifier started");
+		console.info("notifier started");
 		// check for reminders
 		setInterval(function () {
 			DatabaseWrapper.check(onReminder);

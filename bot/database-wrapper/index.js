@@ -22,14 +22,14 @@ module.exports = {
 
 function getAllReminders(onReminder) {
 	let time = moment().format("HH:mm");
-	console.log('find by time: \'' + time + '\';');
+	console.info('find by time: \'' + time + '\';');
 
 	PillReminder
 		.find({ time: time })
 		.exec()
 		.then(reminders => {
-			console.log(JSON.stringify(reminders));
-			console.log(reminders.length + ' rows were received');
+			console.info(JSON.stringify(reminders));
+			console.info(reminders.length + ' rows were received');
 
 			reminders.forEach(reminder => {
 				onReminder(reminder.chatId, reminder.firstDayOfPill, reminder.pillType);
@@ -71,7 +71,7 @@ function removeReminder(chatId, onRemoved) {
 }
 
 function hasReminderByChatId(chatId, onHasReminder, onNoReminder) {
-	console.log('find by chatId: \'' + chatId + '\';');
+	console.info('find by chatId: \'' + chatId + '\';');
 
 	PillReminder
 		.find({ chatId: chatId })
