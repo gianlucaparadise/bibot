@@ -8,7 +8,9 @@ const calendar = require('./calendar-telegram-nodejs');
 
 bot.command("calendar", context => {
 	console.log("calendar from: ", JSON.stringify(context.from));
-	context.reply("Yo", calendar.getCalendar());
+	let cal = calendar.getCalendar()
+	console.log(JSON.stringify(cal));
+	context.reply("Yo", cal);
 });
 
 calendar.setDateListener(bot, (context, date) => {
