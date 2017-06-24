@@ -5,17 +5,15 @@ const DatabaseWrapper = require('./database-wrapper');
 const PillNotifier = require('./pill-notifier');
 const bot = require('./telegraf-wrapper').getBot();
 
-const Markup = require('telegraf').Markup;
+const Extra = require('telegraf').Extra;
 
 bot.command("calendar", context => {
 	console.log("calendar from: ", JSON.stringify(context.from));
-	context.reply("Yo", Markup
-		.keyboard([
-			['🔍 Search', '😎 Popular'],         // Row1 with 2 buttons
-			['☸ Setting', '📞 Feedback'],       // Row2 with 2 buttons
-			['📢 Ads', '⭐️ Rate us', '👥 Share'] // Row3 with 3 buttons
-		])
-	);
+	context.reply("Yo", Extra.HTML().markup((m) =>
+		m.inlineKeyboard([
+			m.callbackButton("21", "twentyone"),
+			m.callbackButton("28", "twentyeight")
+		])));
 });
 
 bot.command("start", context => {
