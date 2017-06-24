@@ -8,9 +8,7 @@ const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
 
 module.exports = {
 	getCalendar: function () {
-		return Extra.HTML().markup((m) => {
-			return m.inlineKeyboard(getPage(m, new Date()));
-		});
+		return getCalendarMarkup(new Date());
 	},
 
 	setDateListener: function (bot, onDateSelected) {
@@ -23,12 +21,21 @@ module.exports = {
 
 		bot.action("calendar-telegram-prev", context => {
 			context.reply("prev");
+			context.editMessageReplyMarkup(getCalendarMarkup(new Date(2017, 2, 1)));
 		});
 
 		bot.action("calendar-telegram-next", context => {
 			context.reply("next");
 		});
+
+		bot.action("calendar-telegram-ignore", context => { });
 	}
+}
+
+function getCalendarMarkup(date) {
+	return Extra.HTML().markup((m) => {
+		return m.inlineKeyboard(getPage(m, date));
+	});
 }
 
 function addHeader(page, m, date) {
