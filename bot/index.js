@@ -10,7 +10,7 @@ const Extra = require('telegraf').Extra;
 bot.command("calendar", context => {
 	console.log("calendar from: ", JSON.stringify(context.from));
 	context.reply("Yo", Extra.HTML().markup((m) => {
-		m.inlineKeyboard([
+		return m.inlineKeyboard([
 			[m.callbackButton("1", "one"), m.callbackButton("2", "two")],
 			[m.callbackButton("3", "three"), m.callbackButton("4", "four")]
 		]);
