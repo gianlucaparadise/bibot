@@ -21,7 +21,6 @@ module.exports = {
 	},
 
 	getExtra: function () {
-		console.log(JSON.stringify(Telegraf));
 		return Telegraf.Extra;
 	}
 }

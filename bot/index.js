@@ -8,7 +8,7 @@ const bot = require('./telegraf-wrapper').getBot();
 const Markup = require('telegraf').Markup;
 
 bot.command("calendar", context => {
-	console.log("calendar: " + JSON.stringify(context));
+	console.log("calendar from: ", JSON.stringify(context.from));
 	context.reply("Yo", Markup
 		.keyboard([
 			['🔍 Search', '😎 Popular'],         // Row1 with 2 buttons
