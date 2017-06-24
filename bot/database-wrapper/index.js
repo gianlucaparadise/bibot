@@ -29,7 +29,7 @@ function getAllReminders(onReminder) {
 	console.info('find by time: \'' + time + '\';');
 
 	PillReminder
-		.find({ time: time })
+		.find({ $or: [{ time: time }, { isWaitingForAnswer: true }] })
 		.exec()
 		.then(reminders => {
 			console.info(JSON.stringify(reminders));
