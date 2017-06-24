@@ -12,21 +12,29 @@ module.exports = {
 	},
 
 	setDateListener: function (bot, onDateSelected) {
-		bot.action(/calendar-telegram-\d+/g, context => {
+		bot.action(/calendar-telegram-date-[\d-]+/g, context => {
 			if (onDateSelected) {
-				let date = context.match[0].replace("calendar-telegram-", "");
+				let date = context.match[0].replace("calendar-telegram-date-", "");
 				onDateSelected(context, date);
 			}
 		});
 
-		bot.action("calendar-telegram-prev", context => {
-			//context.reply("prev", getCalendarMarkup(new Date(2017, 2, 1)));
-			console.log(JSON.stringify(context.callbackQuery.message.text));
-			context.editMessageText(context.callbackQuery.message.text, getCalendarMarkup(new Date(2017, 2, 1)));
+		bot.action(/calendar-telegram-prev-[\d-]+/g, context => {
+			let dateString = context.match[0].replace("calendar-telegram-prev-", "");
+			let date = new Date(dateString);
+			date.setMonth(date.getMonth() - 1);
+
+			let prevText = context.callbackQuery.message.text;
+			context.editMessageText(prevText, getCalendarMarkup(date));
 		});
 
-		bot.action("calendar-telegram-next", context => {
-			context.reply("next");
+		bot.action(/calendar-telegram-next-[\d-]+/g, context => {
+			let dateString = context.match[0].replace("calendar-telegram-next-", "");
+			let date = new Date(dateString);
+			date.setMonth(date.getMonth() + 1);
+
+			let prevText = context.callbackQuery.message.text;
+			context.editMessageText(prevText, getCalendarMarkup(new Date(2017, 2, 1)));
 		});
 
 		bot.action("calendar-telegram-ignore", context => { });
@@ -45,9 +53,9 @@ function addHeader(page, m, date) {
 
 	//page.push([m.callbackButton(monthName + " " + year, "calendar-telegram-ignore")]);
 	page.push([
-		m.callbackButton("<", "calendar-telegram-prev"),
+		m.callbackButton("<", "calendar-telegram-prev-" + toYyyymmdd(date)),
 		m.callbackButton(monthName + " " + year, "calendar-telegram-ignore"),
-		m.callbackButton(">", "calendar-telegram-next")
+		m.callbackButton(">", "calendar-telegram-next-" + toYyyymmdd(date))
 	]);
 
 	page.push(weekDayNames.map(e => m.callbackButton(e, "calendar-telegram-ignore")));
@@ -63,7 +71,7 @@ function addDays(page, m, date) {
 
 		let weekDay = date.getDay();
 		//currentRow[weekDay] = toYyyymmdd(date);
-		currentRow[weekDay] = m.callbackButton(d.toString(), "calendar-telegram-" + toYyyymmdd(date));
+		currentRow[weekDay] = m.callbackButton(d.toString(), "calendar-telegram-date-" + toYyyymmdd(date));
 
 		if (weekDay == 6 || d == maxDays) {
 			page.push(currentRow);
@@ -87,5 +95,5 @@ function toYyyymmdd(date) {
 		date.getFullYear(),
 		(mm > 9 ? '' : '0') + mm,
 		(dd > 9 ? '' : '0') + dd
-	].join('');
+	].join('-');
 }
