@@ -50,13 +50,13 @@ bot.on("text", context => {
 
 bot.action("twentyone", context => {
 	console.log("Action twentyone");
-	context.message = { text: "21" };
+	context["message"] = { text: "21" };
 	processMessage(context);
 });
 
 bot.action("twentyeight", context => {
 	console.log("Action twentyeight");
-	context.message = { text: "28" };
+	context["message"] = { text: "28" };
 	processMessage(context);
 });
 
