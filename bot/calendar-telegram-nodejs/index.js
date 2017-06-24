@@ -34,7 +34,7 @@ module.exports = {
 			date.setMonth(date.getMonth() + 1);
 
 			let prevText = context.callbackQuery.message.text;
-			context.editMessageText(prevText, getCalendarMarkup(new Date(2017, 2, 1)));
+			context.editMessageText(prevText, getCalendarMarkup(date));
 		});
 
 		bot.action("calendar-telegram-ignore", context => { });
