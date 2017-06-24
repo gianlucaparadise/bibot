@@ -21,6 +21,7 @@ module.exports = {
 
 		bot.action("calendar-telegram-prev", context => {
 			//context.reply("prev", getCalendarMarkup(new Date(2017, 2, 1)));
+			console.log(JSON.stringify(context.callbackQuery));
 			context.editMessageText("pick a date", getCalendarMarkup(new Date(2017, 2, 1)));
 		});
 
