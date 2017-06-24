@@ -45,41 +45,39 @@ bot.command("check", context => {
 });
 
 bot.on("text", context => {
-	processMessage(context);
+	console.log("Received a text message:", JSON.stringify(context.message));
+	processMessage(context, context.message.text);
 });
 
 bot.action("twentyone", context => {
 	console.log("Action twentyone");
-	context["message"] = { text: "21" };
-	processMessage(context);
+	processMessage(context, "21");
 });
 
 bot.action("twentyeight", context => {
 	console.log("Action twentyeight");
-	context["message"] = { text: "28" };
-	processMessage(context);
+	processMessage(context, "28");
 });
 
-function processMessage(context) {
-	console.log("Received a text message:", JSON.stringify(context.message));
+function processMessage(context, text) {
 	let isAsking = context.session.isAsking || ConfigState.NONE;
 	console.log("isAsking: " + isAsking)
 
 	switch (isAsking) {
 		case ConfigState.DATE:
-			settingHelper.stepDate(context);
+			settingHelper.stepDate(context, text);
 			break;
 
 		case ConfigState.DATE_CONFIRMATION:
-			settingHelper.stepDateConfirmation(context);
+			settingHelper.stepDateConfirmation(context, text);
 			break;
 
 		case ConfigState.PILL_TYPE:
-			settingHelper.stepPillType(context);
+			settingHelper.stepPillType(context, text);
 			break;
 
 		case ConfigState.ALARM_TIME:
-			settingHelper.stepAlarmTime(context);
+			settingHelper.stepAlarmTime(context, text);
 			break;
 	}
 }

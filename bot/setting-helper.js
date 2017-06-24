@@ -58,8 +58,8 @@ module.exports = {
 		askStepDate(context);
 	},
 
-	stepDate: function (context) {
-		let dateRaw = context.message.text;
+	stepDate: function (context, text) {
+		let dateRaw = text;
 		let date = moment(dateRaw, "YYYY-MM-DD");
 
 		if (!date.isValid()) {
@@ -74,8 +74,8 @@ module.exports = {
 		context.reply("Confermi questa data? (S/N) \n" + formatted);
 	},
 
-	stepDateConfirmation: function (context) {
-		let answerText = context.message.text.toLowerCase();
+	stepDateConfirmation: function (context, text) {
+		let answerText = text.toLowerCase();
 
 		if (answerText == "n" || answerText == "no") {
 			context.reply("Va bene, ricominciamo.");
@@ -92,8 +92,8 @@ module.exports = {
 		askStepPillType(context);
 	},
 
-	stepPillType: function (context) {
-		let pillType = context.message.text;
+	stepPillType: function (context, text) {
+		let pillType = text;
 
 		if (pillType != "21" && pillType != "28") {
 			context.reply("Scusa, non ho capito.");
@@ -106,8 +106,8 @@ module.exports = {
 		askStepAlarmTime(context);
 	},
 
-	stepAlarmTime: function (context) {
-		let timeRaw = context.message.text;
+	stepAlarmTime: function (context, text) {
+		let timeRaw = text;
 		// use moment.unix(context.message.date) for getting timezone
 		let time = momentTimezone.tz(timeRaw, ['h:m a', 'H:m'], "Europe/Rome");
 
