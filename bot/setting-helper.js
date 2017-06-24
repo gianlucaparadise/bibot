@@ -65,34 +65,13 @@ module.exports = {
 
 		if (!date.isValid()) {
 			context.reply("La data è errata. Puoi reinserirla?");
+			askStepDate(context);
 			return;
 		}
 
-		//context.session.isAsking = ConfigState.DATE_CONFIRMATION;
 		context.session.stepDate = date;
 		askStepPillType(context);
-
-		//let formatted = date.locale("IT").format("dddd, D MMMM YYYY");
-		//context.reply("Confermi questa data? (S/N) \n" + formatted);
 	},
-
-	// stepDateConfirmation: function (context, text) {
-	// 	let answerText = text.toLowerCase();
-
-	// 	if (answerText == "n" || answerText == "no") {
-	// 		context.reply("Va bene, ricominciamo.");
-	// 		askStepDate(context);
-	// 		return;
-	// 	}
-
-	// 	if (answerText != "s" && answerText != "si") {
-	// 		context.reply("Lo prendo come un no.");
-	// 		askStepDate(context);
-	// 		return;
-	// 	}
-
-	// 	askStepPillType(context);
-	// },
 
 	stepPillType: function (context, text) {
 		let pillType = text;

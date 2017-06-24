@@ -74,10 +74,6 @@ function processMessage(context, text) {
 			settingHelper.stepDate(context, text);
 			break;
 
-		// case ConfigState.DATE_CONFIRMATION:
-		// 	settingHelper.stepDateConfirmation(context, text);
-		// 	break;
-
 		case ConfigState.PILL_TYPE:
 			settingHelper.stepPillType(context, text);
 			break;
