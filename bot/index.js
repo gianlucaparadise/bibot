@@ -1,3 +1,4 @@
+var moment = require("moment-timezone");
 const settingHelper = require('./setting-helper');
 const ConfigState = settingHelper.ConfigState;
 
@@ -48,8 +49,8 @@ bot.command("check", context => {
 
 	let id = context.chat.id;
 	DatabaseWrapper.hasReminder(id, (firstDayOfPill, pillType, time) => {
-		// todo: change 'time' timezone
-		context.reply("Ciao! Hai impostato un avviso per una pillola da " + pillType + " giorni alle ore " + time);
+		let newTime = moment(time, "HH:mm").tz("Europe/Rome").format("HH:mm");
+		context.reply("Ciao! Hai impostato un avviso per una pillola da " + pillType + " giorni alle ore " + newTime);
 	}, () => {
 		context
 			.reply("Ciao! Non hai nessun reminder salvato")

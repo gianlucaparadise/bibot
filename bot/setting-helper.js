@@ -1,5 +1,5 @@
-var moment = require("moment");
-var momentTimezone = require("moment-timezone");
+//var moment = require("moment");
+var moment = require("moment-timezone");
 
 const DatabaseWrapper = require('./database-wrapper');
 const Extra = require('./telegraf-wrapper').getExtra();
@@ -96,7 +96,7 @@ module.exports = {
 	stepAlarmTime: function (context, text) {
 		let timeRaw = text;
 		// use moment.unix(context.message.date) for getting timezone
-		let time = momentTimezone.tz(timeRaw, ['h:m a', 'H:m'], "Europe/Rome");
+		let time = moment.tz(timeRaw, ['h:m a', 'H:m'], "Europe/Rome");
 
 		if (!time.isValid()) {
 			context.reply("Non riesco a capire l'orario. Puoi scriverlo di nuovo?");

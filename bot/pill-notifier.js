@@ -1,4 +1,4 @@
-var moment = require("moment");
+var moment = require("moment-timezone");
 
 const DatabaseWrapper = require('./database-wrapper');
 const telegrafWrapper = require('./telegraf-wrapper');

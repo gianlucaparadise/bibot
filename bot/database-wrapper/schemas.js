@@ -10,12 +10,5 @@ var pillReminderSchema = mongoose.Schema({
 	creationDate: { type: Date, default: Date.now }
 });
 
-// pillReminderSchema.methods.speak = function () {
-// 	var greeting = this.name
-// 		? "Meow name is " + this.name
-// 		: "I don't have a name";
-// 	console.log(greeting);
-// }
-
 const PillReminder = mongoose.model('PillReminder', pillReminderSchema);
 module.exports = PillReminder;
