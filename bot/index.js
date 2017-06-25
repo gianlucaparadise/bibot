@@ -39,13 +39,13 @@ bot.command("stop", context => {
 	DatabaseWrapper.remove(id, hasRemoved => {
 		if (hasRemoved) {
 			context
-				.reply("Hai rimosso correttamente il reminder")
+				.reply("Hai rimosso correttamente il promemoria")
 				.then(() => context.reply("Puoi registrarne un altro con il comando /start"))
 				.then(() => context.reply("Arrivederci!"));
 		}
 		else {
 			context
-				.reply("Non hai nessun reminder salvato")
+				.reply("Non hai nessun promemoria salvato")
 				.then(() => context.reply("Puoi registrarne uno il comando /start"));
 		}
 	});
@@ -60,7 +60,7 @@ bot.command("check", context => {
 		context.reply("Ciao! Hai impostato un avviso per una pillola da " + pillType + " giorni alle ore " + newTime);
 	}, () => {
 		context
-			.reply("Ciao! Non hai nessun reminder salvato")
+			.reply("Ciao! Non hai nessun promemoria salvato")
 			.then(() => context.reply("Puoi registrarne uno con il comando /start!"));
 	});
 });

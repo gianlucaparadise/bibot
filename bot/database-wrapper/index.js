@@ -15,8 +15,8 @@ module.exports = {
 		setDelay(chatId, minutes, onUpdated);
 	},
 
-	insert: function (chatId, date, pillType, time) {
-		insertReminder(chatId, date, pillType, time);
+	insert: function (chatId, date, pillType, time, onInserted) {
+		insertReminder(chatId, date, pillType, time, onInserted);
 	},
 
 	hasReminder: function (chatId, onHasReminder, onNoReminder) {
@@ -91,7 +91,7 @@ function setDelay(chatId, minutes, onUpdated) {
 
 }
 
-function insertReminder(chatId, firstDayOfPill, pillType, time) {
+function insertReminder(chatId, firstDayOfPill, pillType, time, onInserted) {
 	console.log("inserting " + chatId + " " + firstDayOfPill + " " + pillType + " " + time);
 
 	// I have to remove all the reminders for this chatId
@@ -108,8 +108,9 @@ function insertReminder(chatId, firstDayOfPill, pillType, time) {
 			.save(saved => {
 				console.log("inserted");
 				console.log(JSON.stringify(saved));
-				//let newlyCreatedId = saved.chatId;
-				//console.log("Id inserted row: " + newlyCreatedId);
+				if (onInserted) {
+					onInserted(hasRemoved);
+				}
 			})
 			.catch(ex => console.log(ex));
 	});

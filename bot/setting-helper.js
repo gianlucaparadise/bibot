@@ -45,9 +45,14 @@ function setScheduling(context) {
 	let pillType = context.session.stepPillType;
 
 	let id = context.chat.id;
-	DatabaseWrapper.insert(id, startingDate, pillType, time);
-
-	context.reply("Promemoria settato!");
+	DatabaseWrapper.insert(id, startingDate, pillType, time, hasRemoved => {
+		context
+			.reply("Promemoria settato!")
+			.then(() => {
+				if (hasRemoved)
+					context.reply("Hai sovrascritto il tuo precedente promemoria");
+			});
+	});
 }
 
 module.exports = {
