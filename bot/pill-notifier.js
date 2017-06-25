@@ -34,7 +34,7 @@ function shouldSendPillWarning(startingDateRaw, pillType) {
 
 		let pillDay = (pastDays % 28) + 1; // this is a number between 1 and 28
 
-		console.log("shouldWarn: " + pastDays + " " + pillDay);
+		console.log("shouldWarn - pastDays: " + pastDays + " pillDay: " + pillDay);
 
 		if (pillDay > 21) {
 			return false;
