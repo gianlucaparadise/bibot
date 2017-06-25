@@ -11,8 +11,8 @@ module.exports = {
 		setAnswered(chatId);
 	},
 
-	setDelay: function (chatId, minutes) {
-		setDelay(chatId, minutes);
+	setDelay: function (chatId, minutes, onUpdated) {
+		setDelay(chatId, minutes, onUpdated);
 	},
 
 	insert: function (chatId, date, pillType, time) {
@@ -72,13 +72,20 @@ function setAnswered(chatId) {
 		.catch((ex) => console.log(ex));
 }
 
-function setDelay(chatId, minutes) {
+function setDelay(chatId, minutes, onUpdated) {
 	let delayedTo = moment().add(minutes, "minute").format("HH:mm");
 	console.log("setting delayed to " + delayedTo);
 	PillReminder
 		.findOneAndUpdate({ chatId: chatId, isWaitingForAnswer: true }, { delayedTo: delayedTo })
-		.then((a) => {
-			console.log("set delay for " + chatId + " " + JSON.stringify(a));
+		.then(updatedDoc => {
+			console.log("set delay for " + chatId + " " + JSON.stringify(updatedDoc));
+			if (!onUpdated) return;
+			if (updatedDoc) {
+				onUpdated(true);
+			}
+			else {
+				onUpdated(false);
+			}
 		})
 		.catch((ex) => console.log(ex));
 

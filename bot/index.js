@@ -124,19 +124,21 @@ bot.action("pill-remind-later", context => {
 
 bot.action(/pill-remind-later-\d+/g, context => {
 	let minutes = context.match[0].replace("pill-remind-later-", "");
-	let delayText;
-
-	if (minutes < 60) {
-		delayText = minutes + " minuti";
-	}
-	else {
-		let hours = minutes / 60;
-		delayText = hours == 1 ? "1 ora" : hours + " ore";
-	}
-
-	context.reply("Allora ci sentiamo tra " + delayText);
 	let id = context.chat.id;
-	DatabaseWrapper.setDelay(id, minutes);
+	DatabaseWrapper.setDelay(id, minutes, hasUpdated => {
+		if (!hasUpdated) return;
+
+		let delayText;
+		if (minutes < 60) {
+			delayText = minutes + " minuti";
+		}
+		else {
+			let hours = minutes / 60;
+			delayText = hours == 1 ? "1 ora" : hours + " ore";
+		}
+
+		context.reply("Allora ci sentiamo tra " + delayText);
+	});
 })
 
 PillNotifier.start();
