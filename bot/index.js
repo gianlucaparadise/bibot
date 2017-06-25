@@ -3,7 +3,9 @@ const ConfigState = settingHelper.ConfigState;
 
 const DatabaseWrapper = require('./database-wrapper');
 const PillNotifier = require('./pill-notifier');
-const bot = require('./telegraf-wrapper').getBot();
+const telegrafWrapper = require('./telegraf-wrapper');
+const bot = telegrafWrapper.getBot();
+const Extra = telegrafWrapper.getExtra();
 
 const calendar = require('./calendar-telegram-nodejs');
 
@@ -91,15 +93,33 @@ function processMessage(context, text) {
 
 bot.action("pill-taken", context => {
 	console.log("pill-taken");
-	context.reply("Ottimo!");
+	context.reply("Bravissima!");
 	let id = context.chat.id;
 	DatabaseWrapper.setAnswered(id);
 });
 
 bot.action("pill-remind-later", context => {
 	console.log("pill-remind-later");
-	context.reply("todo");
+	context.reply("Tra quanto vuoi che ti avvisi?", Extra.HTML().markup((m) =>
+		m.inlineKeyboard([
+			[
+				m.callbackButton("10 min", "pill-remind-later-10"),
+				m.callbackButton("30 min", "pill-remind-later-30")
+			],
+			[
+				m.callbackButton("1 ora", "pill-remind-later-60"),
+				m.callbackButton("2 ore", "pill-remind-later-120")
+			]
+		])
+	));
 });
+
+bot.action(/pill-remind-later-\d+/g, context => {
+	let minutes = context.match[0].replace("pill-remind-later-", "");
+	context.reply(minutes);
+	let id = context.chat.id;
+	DatabaseWrapper.setDelay(id, minutes);
+})
 
 PillNotifier.start();
 

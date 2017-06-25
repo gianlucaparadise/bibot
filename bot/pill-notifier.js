@@ -12,7 +12,7 @@ function onReminder(chatId, firstDayOfPill, pillType) {
 		// todo: insert plenty of strings and pick one randomly.
 		telegram.sendMessage(chatId, "Ehi, prendi la pillola!", Extra.HTML().markup((m) =>
 			m.inlineKeyboard([
-				m.callbackButton("Ritarda", "pill-remind-later"),
+				m.callbackButton("Ritarda...", "pill-remind-later"),
 				m.callbackButton("Presa!", "pill-taken")
 			])
 		));

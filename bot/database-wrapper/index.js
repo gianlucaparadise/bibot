@@ -11,6 +11,10 @@ module.exports = {
 		setAnswered(chatId);
 	},
 
+	setDelay: function (chatId, minutes) {
+		setDelay(chatId, minutes);
+	},
+
 	insert: function (chatId, date, pillType, time) {
 		insertReminder(chatId, date, pillType, time);
 	},
@@ -27,16 +31,26 @@ module.exports = {
 function getAllReminders(onReminder) {
 	let time = moment().format("HH:mm");
 	console.info('find by time: \'' + time + '\';');
+	let condition = {
+		$or: [
+			{ time: time },
+			{ isWaitingForAnswer: true, delayedTo: null },
+			{ isWaitingForAnswer: true, delayedTo: time }
+		]
+	};
 
 	PillReminder
-		.find({ $or: [{ time: time }, { isWaitingForAnswer: true }] })
+		.find(condition)
 		.exec()
 		.then(reminders => {
 			console.info(JSON.stringify(reminders));
 			console.info(reminders.length + ' rows were received');
 
 			reminders.forEach(reminder => {
+
 				reminder.isWaitingForAnswer = true;
+				reminder.delayedTo = null;
+
 				reminder
 					.save()
 					.then((a) => {
@@ -51,11 +65,23 @@ function getAllReminders(onReminder) {
 function setAnswered(chatId) {
 	console.log("setting aswered for " + chatId);
 	PillReminder
-		.update({ chatId: chatId }, { isWaitingForAnswer: false })
+		.update({ chatId: chatId }, { isWaitingForAnswer: false, delayedTo: null })
 		.then((a) => {
 			console.log("set aswered for " + chatId + " " + JSON.stringify(a));
 		})
 		.catch((ex) => console.log(ex));
+}
+
+function setDelay(chatId, minutes) {
+	let delayedTo = moment().add(minutes, "minute").format("HH:mm");
+	console.log("setting delayed to " + delayedTo);
+	PillReminder
+		.update({ chatId: chatId }, { isWaitingForAnswer: true, delayedTo: delayedTo })
+		.then((a) => {
+			console.log("set delay for " + chatId + " " + JSON.stringify(a));
+		})
+		.catch((ex) => console.log(ex));
+
 }
 
 function insertReminder(chatId, firstDayOfPill, pillType, time) {
