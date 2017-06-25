@@ -76,7 +76,7 @@ function setDelay(chatId, minutes) {
 	let delayedTo = moment().add(minutes, "minute").format("HH:mm");
 	console.log("setting delayed to " + delayedTo);
 	PillReminder
-		.update({ chatId: chatId }, { isWaitingForAnswer: true, delayedTo: delayedTo })
+		.findOneAndUpdate({ chatId: chatId, isWaitingForAnswer: true }, { delayedTo: delayedTo })
 		.then((a) => {
 			console.log("set delay for " + chatId + " " + JSON.stringify(a));
 		})
@@ -87,21 +87,25 @@ function setDelay(chatId, minutes) {
 function insertReminder(chatId, firstDayOfPill, pillType, time) {
 	console.log("inserting " + chatId + " " + firstDayOfPill + " " + pillType + " " + time);
 
-	let reminder = new PillReminder({
-		chatId: chatId,
-		firstDayOfPill: firstDayOfPill,
-		pillType: pillType,
-		time: time
-	});
+	// I have to remove all the reminders for this chatId
+	removeReminder(chatId, hasRemoved => {
 
-	reminder
-		.save(saved => {
-			console.log("inserted");
-			console.log(JSON.stringify(saved));
-			//let newlyCreatedId = saved.chatId;
-			//console.log("Id inserted row: " + newlyCreatedId);
-		})
-		.catch(ex => console.log(ex));
+		let reminder = new PillReminder({
+			chatId: chatId,
+			firstDayOfPill: firstDayOfPill,
+			pillType: pillType,
+			time: time
+		});
+
+		reminder
+			.save(saved => {
+				console.log("inserted");
+				console.log(JSON.stringify(saved));
+				//let newlyCreatedId = saved.chatId;
+				//console.log("Id inserted row: " + newlyCreatedId);
+			})
+			.catch(ex => console.log(ex));
+	});
 }
 
 function removeReminder(chatId, onRemoved) {
@@ -110,9 +114,9 @@ function removeReminder(chatId, onRemoved) {
 	PillReminder
 		.remove({ chatId: chatId })
 		.then((result) => {
-			console.log(JSON.stringify(result));
-			console.log("Deleted: " + chatId);
-			onRemoved();
+			let hasRemoved = result.n > 0;
+			console.log("Deleted: " + chatId + " n: " + result.n);
+			onRemoved(hasRemoved);
 		})
 		.catch(ex => console.log(ex));
 }

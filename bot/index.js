@@ -36,11 +36,18 @@ bot.command("stop", context => {
 	context.session.isAsking = ConfigState.NONE;
 
 	let id = context.chat.id;
-	DatabaseWrapper.remove(id, () => {
-		context
-			.reply("Hai rimosso correttamente il reminder")
-			.then(() => context.reply("Puoi registrarne un altro con il comando /start"))
-			.then(() => context.reply("Arrivederci!"));
+	DatabaseWrapper.remove(id, hasRemoved => {
+		if (hasRemoved) {
+			context
+				.reply("Hai rimosso correttamente il reminder")
+				.then(() => context.reply("Puoi registrarne un altro con il comando /start"))
+				.then(() => context.reply("Arrivederci!"));
+		}
+		else {
+			context
+				.reply("Non hai nessun reminder salvato")
+				.then(() => context.reply("Puoi registrarne uno il comando /start"));
+		}
 	});
 });
 
@@ -117,7 +124,17 @@ bot.action("pill-remind-later", context => {
 
 bot.action(/pill-remind-later-\d+/g, context => {
 	let minutes = context.match[0].replace("pill-remind-later-", "");
-	context.reply(minutes);
+	let delayText;
+
+	if (minutes < 60) {
+		delayText = minutes + " minuti";
+	}
+	else {
+		let hours = minutes / 60;
+		delayText = hours == 1 ? "1 ora" : hours + " ore";
+	}
+
+	context.reply("Allora ci sentiamo tra " + delayText);
 	let id = context.chat.id;
 	DatabaseWrapper.setDelay(id, minutes);
 })
