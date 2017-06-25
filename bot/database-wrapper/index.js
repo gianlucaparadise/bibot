@@ -121,10 +121,10 @@ function removeReminder(chatId, onRemoved) {
 
 	PillReminder
 		.remove({ chatId: chatId })
-		.then((result) => {
-			console.log(JSON.stringify(result) + " " + result["n"]);
-			let hasRemoved = result.n > 0;
-			console.log("Deleted: " + chatId + " n: " + result.n);
+		.then((res) => {
+			console.log(JSON.stringify(res) + " " + res.result.n);
+			let hasRemoved = res.result.n > 0;
+			console.log("Deleted: " + chatId + " n: " + res.result.n);
 			onRemoved(hasRemoved);
 		})
 		.catch(ex => console.log(ex));
