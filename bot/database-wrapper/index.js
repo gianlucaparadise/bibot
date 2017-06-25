@@ -30,7 +30,7 @@ module.exports = {
 
 function getAllReminders(onReminder) {
 	let time = moment().format("HH:mm");
-	console.info('find by time: \'' + time + '\';');
+	console.log('find by time: \'' + time + '\';');
 	let condition = {
 		$or: [
 			{ time: time },
@@ -43,8 +43,8 @@ function getAllReminders(onReminder) {
 		.find(condition)
 		.exec()
 		.then(reminders => {
-			console.info(JSON.stringify(reminders));
-			console.info(reminders.length + ' rows were received');
+			console.log(JSON.stringify(reminders));
+			console.log(reminders.length + ' rows were received');
 
 			reminders.forEach(reminder => {
 
@@ -122,7 +122,6 @@ function removeReminder(chatId, onRemoved) {
 	PillReminder
 		.remove({ chatId: chatId })
 		.then((res) => {
-			console.log(JSON.stringify(res) + " " + res.result.n);
 			let hasRemoved = res.result.n > 0;
 			console.log("Deleted: " + chatId + " n: " + res.result.n);
 			onRemoved(hasRemoved);
@@ -131,7 +130,7 @@ function removeReminder(chatId, onRemoved) {
 }
 
 function hasReminderByChatId(chatId, onHasReminder, onNoReminder) {
-	console.info('find by chatId: \'' + chatId + '\';');
+	console.log('find by chatId: \'' + chatId + '\';');
 
 	PillReminder
 		.find({ chatId: chatId })
