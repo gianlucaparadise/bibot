@@ -8,10 +8,10 @@ const telegrafWrapper = require('./telegraf-wrapper');
 const bot = telegrafWrapper.getBot();
 const Extra = telegrafWrapper.getExtra();
 
-const calendar = require('./calendar-telegram-nodejs');
+const calendar = require('telegraf-calendar-telegram');
 
 calendar.setDateListener(bot, (context, date) => {
-	processMessage(context, date);
+	settingHelper.processMessage(context, date);
 });
 
 bot.command("start", context => {
@@ -28,7 +28,7 @@ bot.command("start", context => {
 
 	context
 		.reply(text)
-		.then(() => settingHelper.askStepPillType(context));
+		.then(() => settingHelper.startSettingFlow(context));
 });
 
 bot.command("stop", context => {
@@ -67,37 +67,18 @@ bot.command("check", context => {
 
 bot.on("text", context => {
 	console.log("Received a text message:", JSON.stringify(context.message));
-	processMessage(context, context.message.text);
+	settingHelper.processMessage(context, context.message.text);
 });
 
 bot.action("twentyone", context => {
 	console.log("Action twentyone");
-	processMessage(context, "21");
+	settingHelper.processMessage(context, "21");
 });
 
 bot.action("twentyeight", context => {
 	console.log("Action twentyeight");
-	processMessage(context, "28");
+	settingHelper.processMessage(context, "28");
 });
-
-function processMessage(context, text) {
-	let isAsking = context.session.isAsking || ConfigState.NONE;
-	console.log("isAsking: " + isAsking)
-
-	switch (isAsking) {
-		case ConfigState.DATE:
-			settingHelper.stepDate(context, text);
-			break;
-
-		case ConfigState.PILL_TYPE:
-			settingHelper.stepPillType(context, text);
-			break;
-
-		case ConfigState.ALARM_TIME:
-			settingHelper.stepAlarmTime(context, text);
-			break;
-	}
-}
 
 bot.action("pill-taken", context => {
 	console.log("pill-taken");

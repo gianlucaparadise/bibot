@@ -16,7 +16,8 @@
     "mongoose": "^4.10.8",
     "morgan": "~1.7.0",
     "serve-favicon": "~2.3.0",
-    "telegraf": "^3.6.7"
+    "telegraf": "^3.6.7",
+    "telegraf-calendar-telegram": "^0.5.1"
   },
   "devDependencies": {
     "eslint": "^3.19.0"
