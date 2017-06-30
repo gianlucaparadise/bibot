@@ -4,13 +4,13 @@ const ConfigState = settingHelper.ConfigState;
 
 const DatabaseWrapper = require('./database-wrapper');
 const PillNotifier = require('./pill-notifier');
-const telegrafWrapper = require('./telegraf-wrapper');
-const bot = telegrafWrapper.getBot();
-const Extra = telegrafWrapper.getExtra();
+const TelegrafWrapper = require('./telegraf-wrapper');
 
-const calendar = require('telegraf-calendar-telegram');
+const bot = TelegrafWrapper.getBot();
+const Extra = TelegrafWrapper.getExtra();
+const calendar = TelegrafWrapper.getCalendar();
 
-calendar.setDateListener(bot, (context, date) => {
+calendar.setDateListener((context, date) => {
 	settingHelper.processMessage(context, date);
 });
 

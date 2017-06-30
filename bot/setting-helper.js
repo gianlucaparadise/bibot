@@ -2,9 +2,9 @@
 var moment = require("moment-timezone");
 
 const DatabaseWrapper = require('./database-wrapper');
-const Extra = require('./telegraf-wrapper').getExtra();
-
-const calendar = require('telegraf-calendar-telegram');
+const TelegrafWrapper = require('./telegraf-wrapper');
+const Extra = TelegrafWrapper.getExtra();
+const calendar = TelegrafWrapper.getCalendar();
 
 const ConfigState = {
 	NONE: 0,

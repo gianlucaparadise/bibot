@@ -17,7 +17,7 @@
     "morgan": "~1.7.0",
     "serve-favicon": "~2.3.0",
     "telegraf": "^3.6.7",
-    "telegraf-calendar-telegram": "^0.5.1"
+    "telegraf-calendar-telegram": "^1.0.0"
   },
   "devDependencies": {
     "eslint": "^3.19.0"
