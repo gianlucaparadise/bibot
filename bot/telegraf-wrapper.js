@@ -38,7 +38,16 @@ class TelegrafWrapper {
 			});
 		}
 
-		return calendar;
+		const today = new Date();
+		const minDate = new Date();
+		minDate.setMonth(today.getMonth() - 1);
+		minDate.setDate(1);
+
+		const maxDate = new Date();
+		maxDate.setMonth(today.getMonth() + 1);
+		maxDate.setDate(0); // this will set date at last day of month
+
+		return calendar.setMinDate(minDate).setMaxDate(maxDate);
 	}
 }
 
