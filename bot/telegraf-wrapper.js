@@ -44,8 +44,9 @@ class TelegrafWrapper {
 		minDate.setDate(1);
 
 		const maxDate = new Date();
-		maxDate.setMonth(today.getMonth() + 1);
-		maxDate.setDate(0); // this will set date at last day of month
+		// these two lines will set date at last day of next month
+		maxDate.setMonth(today.getMonth() + 2);
+		maxDate.setDate(0);
 
 		return calendar.setMinDate(minDate).setMaxDate(maxDate);
 	}
