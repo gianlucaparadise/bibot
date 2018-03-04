@@ -1,7 +1,14 @@
 // Bot as a singleton
-
+const path = require('path');
 const Telegraf = require('telegraf');
 const Calendar = require('telegraf-calendar-telegram');
+
+const TelegrafI18n = require('telegraf-i18n');
+const i18n = new TelegrafI18n({
+	defaultLanguage: 'en',
+	allowMissing: true,
+	directory: path.resolve(__dirname, 'locales')
+});
 
 var bot = null;
 var calendar = null;
@@ -15,6 +22,7 @@ class TelegrafWrapper {
 			//bot.context({ isAsking: ConfigState.NONE });
 
 			bot.use(Telegraf.memorySession());
+			bot.use(i18n.middleware());
 
 			console.log("Bot initialized");
 		}

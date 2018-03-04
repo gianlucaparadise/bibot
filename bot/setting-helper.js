@@ -17,10 +17,10 @@ const ConfigState = {
 
 function askStepPillType(context) {
 	context.session.isAsking = ConfigState.PILL_TYPE;
-	context.reply("Prendi una pillola da 21 o da 28 giorni?", Extra.HTML().markup((m) =>
+	context.reply(context.i18n.t("setting-pill-type"), Extra.HTML().markup((m) =>
 		m.inlineKeyboard([
-			m.callbackButton("21", "twentyone"),
-			m.callbackButton("28", "twentyeight")
+			m.callbackButton(context.i18n.t("setting-pill-type-21"), "twentyone"),
+			m.callbackButton(context.i18n.t("setting-pill-type-28"), "twentyeight")
 		])));
 }
 
@@ -29,7 +29,7 @@ function stepPillType(context, text) {
 
 	if (pillType != "21" && pillType != "28") {
 		context
-			.reply("Scusa, non ho capito.")
+			.reply(context.i18n.t("setting-dont-understand"))
 			.then(() => askStepPillType(context));
 		return;
 	}
@@ -46,7 +46,7 @@ function stepPillType(context, text) {
 
 function askStepDate(context) {
 	context.session.isAsking = ConfigState.DATE;
-	context.reply("In che giorno hai iniziato a prendere la pillola?", calendar.getCalendar());
+	context.reply(context.i18n.t("setting-start-date"), calendar.getCalendar());
 }
 
 function stepDate(context, text) {
@@ -55,7 +55,7 @@ function stepDate(context, text) {
 
 	if (!date.isValid()) {
 		context
-			.reply("La data è errata. Puoi reinserirla?")
+			.reply(context.i18n.t("setting-wrong-date"))
 			.then(() => askStepDate(context));
 		return;
 	}
@@ -66,7 +66,7 @@ function stepDate(context, text) {
 
 function askStepAlarmTime(context) {
 	context.session.isAsking = ConfigState.ALARM_TIME;
-	context.reply("A che ora vuoi che ti avvisi? Ad esempio: 20:00");
+	context.reply(context.i18n.t("setting-alarm-time"));
 }
 
 function stepAlarmTime(context, text) {
@@ -75,7 +75,7 @@ function stepAlarmTime(context, text) {
 	let time = moment.tz(timeRaw, ['h:m a', 'H:m'], "Europe/Rome");
 
 	if (!time.isValid()) {
-		context.reply("Non riesco a capire l'orario. Puoi scriverlo di nuovo?");
+		context.reply(context.i18n.t("setting-dont-understand-time"));
 		return;
 	}
 
@@ -98,10 +98,10 @@ function setScheduling(context) {
 	let id = context.chat.id;
 	DatabaseWrapper.insert(id, startingDate, pillType, time, hasRemoved => {
 		context
-			.reply("Promemoria settato!")
+			.reply(context.i18n.t("setting-completed"))
 			.then(() => {
 				if (hasRemoved)
-					context.reply("Hai sovrascritto il tuo precedente promemoria");
+					context.reply(context.i18n.t("setting-overwritten"));
 			});
 	});
 }

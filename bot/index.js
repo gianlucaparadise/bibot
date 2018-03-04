@@ -18,13 +18,7 @@ bot.command("start", context => {
 	console.log("Start from: ", JSON.stringify(context.from));
 
 	// todo: localize strings in english
-	let text;
-	if (context.from.first_name) {
-		text = "Ciao " + context.from.first_name + "! Sono Bibot.";
-	}
-	else {
-		text = "Ciao! Sono Bibot.";
-	}
+	let text = context.i18n.t("greeting");
 
 	context
 		.reply(text)
@@ -39,14 +33,14 @@ bot.command("stop", context => {
 	DatabaseWrapper.remove(id, hasRemoved => {
 		if (hasRemoved) {
 			context
-				.reply("Hai rimosso correttamente il promemoria")
-				.then(() => context.reply("Puoi registrarne un altro con il comando /start"))
-				.then(() => context.reply("Arrivederci!"));
+				.reply(context.i18n.t("remider-removed"))
+				.then(() => context.reply(context.i18n.t("reminder-register-another")))
+				.then(() => context.reply(context.i18n.t("goodbye")));
 		}
 		else {
 			context
-				.reply("Non hai nessun promemoria salvato")
-				.then(() => context.reply("Puoi registrarne uno il comando /start"));
+				.reply(context.i18n.t("reminder-none"))
+				.then(() => context.reply(context.i18n.t("reminder-register-another")));
 		}
 	});
 });
@@ -57,11 +51,11 @@ bot.command("check", context => {
 	let id = context.chat.id;
 	DatabaseWrapper.hasReminder(id, (firstDayOfPill, pillType, time) => {
 		let newTime = moment(time, "HH:mm").tz("Europe/Rome").format("HH:mm");
-		context.reply("Ciao! Hai impostato un avviso per una pillola da " + pillType + " giorni alle ore " + newTime);
+		context.reply(context.i18n.t("reminder-recap", { pillType: pillType, newTime: newTime }));
 	}, () => {
 		context
-			.reply("Ciao! Non hai nessun promemoria salvato")
-			.then(() => context.reply("Puoi registrarne uno con il comando /start!"));
+			.reply(context.i18n.t("greeting-reminder-none"))
+			.then(() => context.reply(context.i18n.t("reminder-register-another")));
 	});
 });
 
@@ -82,22 +76,22 @@ bot.action("twentyeight", context => {
 
 bot.action("pill-taken", context => {
 	console.log("pill-taken");
-	context.reply("Bravissima!");
+	context.reply(context.i18n.t("pill-taken"));
 	let id = context.chat.id;
 	DatabaseWrapper.setAnswered(id);
 });
 
 bot.action("pill-remind-later", context => {
 	console.log("pill-remind-later");
-	context.reply("Tra quanto vuoi che ti avvisi?", Extra.HTML().markup((m) =>
+	context.reply(context.i18n.t("pill-remind-later"), Extra.HTML().markup((m) =>
 		m.inlineKeyboard([
 			[
-				m.callbackButton("10 min", "pill-remind-later-10"),
-				m.callbackButton("30 min", "pill-remind-later-30")
+				m.callbackButton(context.i18n.t("pill-remind-later-10"), "pill-remind-later-10"),
+				m.callbackButton(context.i18n.t("pill-remind-later-30"), "pill-remind-later-30")
 			],
 			[
-				m.callbackButton("1 ora", "pill-remind-later-60"),
-				m.callbackButton("2 ore", "pill-remind-later-120")
+				m.callbackButton(context.i18n.t("pill-remind-later-60"), "pill-remind-later-60"),
+				m.callbackButton(context.i18n.t("pill-remind-later-120"), "pill-remind-later-120")
 			]
 		])
 	));
@@ -111,14 +105,14 @@ bot.action(/pill-remind-later-\d+/g, context => {
 
 		let delayText;
 		if (minutes < 60) {
-			delayText = minutes + " minuti";
+			delayText = context.i18n.t("pill-remind-later-confirmation-minutes", { minutes: minutes });
 		}
 		else {
 			let hours = minutes / 60;
-			delayText = hours == 1 ? "1 ora" : hours + " ore";
+			delayText = context.i18n.t("pill-remind-later-confirmation-hours", { hours: hours });
 		}
 
-		context.reply("Allora ci sentiamo tra " + delayText);
+		context.reply(context.i18n.t("pill-remind-later-confirmation", { delayText: delayText }));
 	});
 })
 
