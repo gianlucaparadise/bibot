@@ -10,6 +10,8 @@ const i18n = telegrafWrapper.getI18n();
 function onReminder(chatId, firstDayOfPill, pillType) {
 	let shouldWarn = shouldSendPillWarning(firstDayOfPill, pillType);
 	if (shouldWarn) {
+		i18n.locale('en-US');
+
 		// todo: insert plenty of strings and pick one randomly.
 		telegram.sendMessage(chatId, i18n.t("reminder-message"), Extra.HTML().markup((m) =>
 			m.inlineKeyboard([
