@@ -96,7 +96,8 @@ function setScheduling(context) {
 	let pillType = context.session.stepPillType;
 
 	let id = context.chat.id;
-	DatabaseWrapper.insert(id, startingDate, pillType, time, hasRemoved => {
+	let lang = context.from.language_code;
+	DatabaseWrapper.insert(id, startingDate, pillType, time, lang, hasRemoved => {
 		context
 			.reply(context.i18n.t("setting-completed"))
 			.then(() => {

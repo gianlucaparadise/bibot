@@ -7,20 +7,20 @@ module.exports = {
 		getAllReminders(onReminder);
 	},
 
-	setAnswered: function (chatId) {
-		setAnswered(chatId);
+	setAnswered: function (chatId, lang) {
+		setAnswered(chatId, lang);
 	},
 
-	setDelay: function (chatId, minutes, onUpdated) {
-		setDelay(chatId, minutes, onUpdated);
+	setDelay: function (chatId, minutes, lang, onUpdated) {
+		setDelay(chatId, minutes, lang, onUpdated);
 	},
 
-	insert: function (chatId, date, pillType, time, onInserted) {
-		insertReminder(chatId, date, pillType, time, onInserted);
+	insert: function (chatId, date, pillType, time, lang, onInserted) {
+		insertReminder(chatId, date, pillType, time, lang, onInserted);
 	},
 
-	hasReminder: function (chatId, onHasReminder, onNoReminder) {
-		hasReminderByChatId(chatId, onHasReminder, onNoReminder);
+	hasReminder: function (chatId, lang, onHasReminder, onNoReminder) {
+		hasReminderByChatId(chatId, lang, onHasReminder, onNoReminder);
 	},
 
 	remove: function (chatId, onRemoved) {
@@ -55,28 +55,28 @@ function getAllReminders(onReminder) {
 					.save()
 					.then((a) => {
 						console.log("isWaitingForAnswer saved " + JSON.stringify(a));
-						onReminder(reminder.chatId, reminder.firstDayOfPill, reminder.pillType);
+						onReminder(reminder.chatId, reminder.firstDayOfPill, reminder.pillType, reminder.langCode);
 					});
 			}, this);
 		})
 		.catch(ex => console.log(ex));
 }
 
-function setAnswered(chatId) {
+function setAnswered(chatId, lang) {
 	console.log("setting aswered for " + chatId);
 	PillReminder
-		.update({ chatId: chatId }, { isWaitingForAnswer: false, delayedTo: null })
+		.update({ chatId: chatId }, { isWaitingForAnswer: false, delayedTo: null, langCode: lang })
 		.then((a) => {
 			console.log("set aswered for " + chatId + " " + JSON.stringify(a));
 		})
 		.catch((ex) => console.log(ex));
 }
 
-function setDelay(chatId, minutes, onUpdated) {
+function setDelay(chatId, minutes, lang, onUpdated) {
 	let delayedTo = moment().add(minutes, "minute").format("HH:mm");
 	console.log("setting delayed to " + delayedTo);
 	PillReminder
-		.findOneAndUpdate({ chatId: chatId, isWaitingForAnswer: true }, { delayedTo: delayedTo })
+		.findOneAndUpdate({ chatId: chatId, isWaitingForAnswer: true }, { delayedTo: delayedTo, langCode: lang })
 		.then(updatedDoc => {
 			console.log("set delay for " + chatId + " " + JSON.stringify(updatedDoc));
 			if (!onUpdated) return;
@@ -91,8 +91,8 @@ function setDelay(chatId, minutes, onUpdated) {
 
 }
 
-function insertReminder(chatId, firstDayOfPill, pillType, time, onInserted) {
-	console.log("inserting " + chatId + " " + firstDayOfPill + " " + pillType + " " + time);
+function insertReminder(chatId, firstDayOfPill, pillType, time, lang, onInserted) {
+	console.log("inserting " + chatId + " " + firstDayOfPill + " " + pillType + " " + time + " " + lang);
 
 	// I have to remove all the reminders for this chatId
 	removeReminder(chatId, hasRemoved => {
@@ -101,7 +101,8 @@ function insertReminder(chatId, firstDayOfPill, pillType, time, onInserted) {
 			chatId: chatId,
 			firstDayOfPill: firstDayOfPill,
 			pillType: pillType,
-			time: time
+			time: time,
+			langCode: lang
 		});
 
 		reminder
@@ -129,7 +130,7 @@ function removeReminder(chatId, onRemoved) {
 		.catch(ex => console.log(ex));
 }
 
-function hasReminderByChatId(chatId, onHasReminder, onNoReminder) {
+function hasReminderByChatId(chatId, lang, onHasReminder, onNoReminder) {
 	console.log('find by chatId: \'' + chatId + '\';');
 
 	PillReminder
@@ -145,6 +146,14 @@ function hasReminderByChatId(chatId, onHasReminder, onNoReminder) {
 			else {
 				onNoReminder();
 			}
+		})
+		.catch(ex => console.log(ex));
+
+	// I update lang code just for data integrity 
+	PillReminder
+		.findOneAndUpdate({ chatId: chatId }, { langCode: lang })
+		.then(updatedDoc => {
+			console.log("updated langcode for " + chatId + " " + JSON.stringify(updatedDoc));
 		})
 		.catch(ex => console.log(ex));
 }

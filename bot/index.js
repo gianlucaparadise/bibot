@@ -49,7 +49,8 @@ bot.command("check", context => {
 	context.session.isAsking = ConfigState.NONE;
 
 	let id = context.chat.id;
-	DatabaseWrapper.hasReminder(id, (firstDayOfPill, pillType, time) => {
+	let lang = context.from.language_code;
+	DatabaseWrapper.hasReminder(id, lang, (firstDayOfPill, pillType, time) => {
 		let newTime = moment(time, "HH:mm").tz("Europe/Rome").format("HH:mm");
 		context.reply(context.i18n.t("reminder-recap", { pillType: pillType, newTime: newTime }));
 	}, () => {
@@ -78,7 +79,8 @@ bot.action("pill-taken", context => {
 	console.log("pill-taken");
 	context.reply(context.i18n.t("pill-taken"));
 	let id = context.chat.id;
-	DatabaseWrapper.setAnswered(id);
+	let lang = context.from.language_code;
+	DatabaseWrapper.setAnswered(id, lang);
 });
 
 bot.action("pill-remind-later", context => {
@@ -100,7 +102,8 @@ bot.action("pill-remind-later", context => {
 bot.action(/pill-remind-later-\d+/g, context => {
 	let minutes = context.match[0].replace("pill-remind-later-", "");
 	let id = context.chat.id;
-	DatabaseWrapper.setDelay(id, minutes, hasUpdated => {
+	let lang = context.from.language_code;
+	DatabaseWrapper.setDelay(id, minutes, lang, hasUpdated => {
 		if (!hasUpdated) return;
 
 		let delayText;
