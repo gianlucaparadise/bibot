@@ -5,15 +5,16 @@ const telegrafWrapper = require('./telegraf-wrapper');
 const bot = telegrafWrapper.getBot();
 const Extra = telegrafWrapper.getExtra();
 const telegram = bot.telegram;
+const i18n = telegrafWrapper.getI18n();
 
 function onReminder(chatId, firstDayOfPill, pillType) {
 	let shouldWarn = shouldSendPillWarning(firstDayOfPill, pillType);
 	if (shouldWarn) {
 		// todo: insert plenty of strings and pick one randomly.
-		telegram.sendMessage(chatId, bot.context.i18n.t("reminder-message"), Extra.HTML().markup((m) =>
+		telegram.sendMessage(chatId, i18n.t("reminder-message"), Extra.HTML().markup((m) =>
 			m.inlineKeyboard([
-				m.callbackButton(bot.context.i18n.t("reminder-delay"), "pill-remind-later"),
-				m.callbackButton(bot.context.i18n.t("reminder-taken"), "pill-taken")
+				m.callbackButton(i18n.t("reminder-delay"), "pill-remind-later"),
+				m.callbackButton(i18n.t("reminder-taken"), "pill-taken")
 			])
 		));
 

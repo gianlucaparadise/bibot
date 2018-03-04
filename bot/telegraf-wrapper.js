@@ -30,6 +30,10 @@ class TelegrafWrapper {
 		return bot;
 	}
 
+	static getI18n() {
+		return i18n;
+	}
+
 	static getExtra() {
 		return Telegraf.Extra;
 	}
