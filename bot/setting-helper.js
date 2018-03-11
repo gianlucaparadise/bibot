@@ -5,6 +5,9 @@ const DatabaseWrapper = require('./database-wrapper');
 const TelegrafWrapper = require('./telegraf-wrapper');
 const Extra = TelegrafWrapper.getExtra();
 const calendar = TelegrafWrapper.getCalendar();
+const googleMapsClient = require('@google/maps').createClient({
+	key: process.env.BIBOT_GOOGLE_API_KEY
+});
 
 const ConfigState = {
 	NONE: 0,
@@ -84,11 +87,23 @@ function stepTimezoneLocation(context, text) {
 		return;
 	}
 
-	// todo: call time zone API to get timezone
-	let timezone = "Europe/Rome";
+	googleMapsClient.timezone({
+		location: latlon.split(",")
+	})
+		.asPromise()
+		.then(response => {
+			console.log(`Timezone api response: ${JSON.stringify(response)}`);
+			let timezone = response.timeZoneId;
 
-	context.session.stepTimezoneLocation = timezone;
-	askStepAlarmTime(context);
+			context.session.stepTimezoneLocation = timezone;
+			askStepAlarmTime(context);
+		})
+		.catch(err => {
+			console.log(`Error while calling timezone api: ${JSON.stringify(err)}`);
+			context
+				.reply(context.i18n.t("setting-timezone-location-error"))
+				.then(() => askStepTimezoneLocation(context));
+		});
 }
 
 function askStepAlarmTime(context) {
@@ -98,8 +113,9 @@ function askStepAlarmTime(context) {
 
 function stepAlarmTime(context, text) {
 	let timeRaw = text;
+	let timezone = context.session.stepTimezoneLocation;
 	// use moment.unix(context.message.date) for getting timezone
-	let time = moment.tz(timeRaw, ['h:m a', 'H:m'], "Europe/Rome");
+	let time = moment.tz(timeRaw, ['h:m a', 'H:m'], timezone);
 
 	if (!time.isValid()) {
 		context.reply(context.i18n.t("setting-dont-understand-time"));

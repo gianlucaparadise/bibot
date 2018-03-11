@@ -93,7 +93,6 @@ function setDelay(chatId, minutes, lang, onUpdated) {
 
 function insertReminder(chatId, firstDayOfPill, pillType, time, timezone, lang, onInserted) {
 	console.log(`inserting ${chatId} ${firstDayOfPill} ${pillType} ${time} ${timezone} ${lang}`);
-	// todo: save timezone to not use "Europe/Rome"
 
 	// I have to remove all the reminders for this chatId
 	removeReminder(chatId, hasRemoved => {
@@ -103,6 +102,7 @@ function insertReminder(chatId, firstDayOfPill, pillType, time, timezone, lang, 
 			firstDayOfPill: firstDayOfPill,
 			pillType: pillType,
 			time: time,
+			timezone: timezone,
 			langCode: lang
 		});
 
@@ -142,7 +142,7 @@ function hasReminderByChatId(chatId, lang, onHasReminder, onNoReminder) {
 
 			let reminder = reminders[0];
 			if (reminder) {
-				onHasReminder(reminder.firstDayOfPill, reminder.pillType, reminder.time);
+				onHasReminder(reminder.firstDayOfPill, reminder.pillType, reminder.time, reminder.timezone);
 			}
 			else {
 				onNoReminder();

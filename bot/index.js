@@ -50,8 +50,8 @@ bot.command("check", context => {
 
 	let id = context.chat.id;
 	let lang = context.from.language_code;
-	DatabaseWrapper.hasReminder(id, lang, (firstDayOfPill, pillType, time) => {
-		let newTime = moment(time, "HH:mm").tz("Europe/Rome").format("HH:mm");
+	DatabaseWrapper.hasReminder(id, lang, (firstDayOfPill, pillType, time, timezone) => {
+		let newTime = moment(time, "HH:mm").tz(timezone).format("HH:mm");
 		context.reply(context.i18n.t("reminder-recap", { pillType: pillType, newTime: newTime }));
 	}, () => {
 		context
@@ -62,7 +62,7 @@ bot.command("check", context => {
 
 bot.on("text", context => {
 	console.log("Received a text message:", JSON.stringify(context.message));
-	settingHelper.processMessage(context, context.message);
+	settingHelper.processMessage(context, context.message.text);
 });
 
 bot.on("location", context => {

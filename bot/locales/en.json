@@ -28,6 +28,7 @@
 	"setting-timezone-location": "Send me your location so I can save your timezone",
 	"setting-timezone-location-button": "Send location",
 	"setting-timezone-location-wrong": "I don't understand, sorry",
+	"setting-timezone-location-error": "I'm sorry, I had a problem...",
 	"reminder-message": "Hey, take the pill!",
 	"reminder-delay": "Delay...",
 	"reminder-taken": "Taken!",

@@ -28,6 +28,7 @@
 	"setting-timezone-location": "Inviami la tua posizione così posso salvarmi il tuo fuso orario",
 	"setting-timezone-location-button": "Invia posizione",
 	"setting-timezone-location-wrong": "Non ho capito, scusa",
+	"setting-timezone-location-error": "Scusa, ho avuto un problema...",
 	"reminder-message": "Ehi, prendi la pillola!",
 	"reminder-delay": "Ritarda...",
 	"reminder-taken": "Presa!",

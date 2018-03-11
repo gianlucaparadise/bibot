@@ -5,6 +5,7 @@ var pillReminderSchema = mongoose.Schema({
 	firstDayOfPill: String,
 	pillType: String,
 	time: String,
+	timezone: String,
 	langCode: String,
 	isWaitingForAnswer: { type: Boolean, default: false },
 	delayedTo: { type: String, default: null },

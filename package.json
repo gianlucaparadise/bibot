@@ -7,6 +7,7 @@
     "restart": "pm2 restart bibot"
   },
   "dependencies": {
+    "@google/maps": "^0.4.5",
     "body-parser": "~1.15.2",
     "cookie-parser": "~1.4.3",
     "debug": "~2.2.0",
