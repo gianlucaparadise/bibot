@@ -68,7 +68,7 @@ function stepDate(context, text) {
 function askStepTimezoneLocation(context) {
 	context.session.isAsking = ConfigState.TIMEZONE;
 	context.reply(context.i18n.t("setting-timezone-location"), Extra.markup((m) =>
-		m.resize().keyboard([
+		m.resize().oneTime().keyboard([
 			m.locationRequestButton(context.i18n.t("setting-timezone-location-button"))
 		])));
 }
