@@ -12,7 +12,8 @@ const ConfigState = {
 	DATE_CONFIRMATION: 2, // deprecated
 	PILL_TYPE: 3,
 	ALARM_TIME: 4,
-	COMPLETED: 5
+	COMPLETED: 5,
+	TIMEZONE: 6
 };
 
 function askStepPillType(context) {
@@ -61,6 +62,32 @@ function stepDate(context, text) {
 	}
 
 	context.session.stepDate = date;
+	askStepTimezoneLocation(context);
+}
+
+function askStepTimezoneLocation(context) {
+	context.session.isAsking = ConfigState.TIMEZONE;
+	context.reply(context.i18n.t("setting-timezone-location"), Extra.HTML().markup((m) =>
+		m.inlineKeyboard([
+			m.locationRequestButton(context.i18n.t("setting-timezone-location-button"))
+		])));
+}
+
+function stepTimezoneLocation(context, text) {
+	let latlon = text;
+	let isValid = (/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/).test(latlon);
+
+	if (!isValid) {
+		context
+			.reply(context.i18n.t("setting-timezone-location-wrong"))
+			.then(() => askStepTimezoneLocation(context));
+		return;
+	}
+
+	// todo: call time zone API to get timezone
+	let timezone = "Europe/Rome";
+
+	context.session.stepTimezoneLocation = timezone;
 	askStepAlarmTime(context);
 }
 
@@ -95,9 +122,10 @@ function setScheduling(context) {
 
 	let pillType = context.session.stepPillType;
 
+	let timezone = context.session.stepTimezoneLocation;
 	let id = context.chat.id;
 	let lang = context.from.language_code;
-	DatabaseWrapper.insert(id, startingDate, pillType, time, lang, hasRemoved => {
+	DatabaseWrapper.insert(id, startingDate, pillType, time, timezone, lang, hasRemoved => {
 		context
 			.reply(context.i18n.t("setting-completed"))
 			.then(() => {
@@ -122,6 +150,10 @@ function processMessage(context, text) {
 
 		case ConfigState.ALARM_TIME:
 			stepAlarmTime(context, text);
+			break;
+
+		case ConfigState.TIMEZONE:
+			stepTimezoneLocation(context, text);
 			break;
 	}
 }

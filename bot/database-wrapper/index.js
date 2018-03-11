@@ -15,8 +15,8 @@ module.exports = {
 		setDelay(chatId, minutes, lang, onUpdated);
 	},
 
-	insert: function (chatId, date, pillType, time, lang, onInserted) {
-		insertReminder(chatId, date, pillType, time, lang, onInserted);
+	insert: function (chatId, date, pillType, time, timezone, lang, onInserted) {
+		insertReminder(chatId, date, pillType, time, timezone, lang, onInserted);
 	},
 
 	hasReminder: function (chatId, lang, onHasReminder, onNoReminder) {
@@ -91,8 +91,9 @@ function setDelay(chatId, minutes, lang, onUpdated) {
 
 }
 
-function insertReminder(chatId, firstDayOfPill, pillType, time, lang, onInserted) {
-	console.log("inserting " + chatId + " " + firstDayOfPill + " " + pillType + " " + time + " " + lang);
+function insertReminder(chatId, firstDayOfPill, pillType, time, timezone, lang, onInserted) {
+	console.log(`inserting ${chatId} ${firstDayOfPill} ${pillType} ${time} ${timezone} ${lang}`);
+	// todo: save timezone to not use "Europe/Rome"
 
 	// I have to remove all the reminders for this chatId
 	removeReminder(chatId, hasRemoved => {

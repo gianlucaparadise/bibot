@@ -62,7 +62,15 @@ bot.command("check", context => {
 
 bot.on("text", context => {
 	console.log("Received a text message:", JSON.stringify(context.message));
-	settingHelper.processMessage(context, context.message.text);
+	settingHelper.processMessage(context, context.message);
+});
+
+bot.on("location", context => {
+	console.log("Received a location:", JSON.stringify(context.message));
+	let lat = context.message.location.latitude;
+	let lon = context.message.location.longitude;
+	let locationText = `${lat},${lon}`;
+	settingHelper.processMessage(context, locationText);
 });
 
 bot.action("twentyone", context => {
