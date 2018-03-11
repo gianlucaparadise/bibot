@@ -40,6 +40,7 @@ class TelegrafWrapper {
 
 	static getCalendar() {
 		if (!calendar) {
+			// todo: localize months and weekdays
 			calendar = new Calendar(TelegrafWrapper.getBot(), {
 				startWeekDay: 1,
 				weekDayNames: ["L", "M", "M", "G", "V", "S", "D"],
