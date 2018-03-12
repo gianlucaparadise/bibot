@@ -6,7 +6,8 @@ const TelegrafWrapper = require('./telegraf-wrapper');
 const Extra = TelegrafWrapper.getExtra();
 const calendar = TelegrafWrapper.getCalendar();
 const googleMapsClient = require('@google/maps').createClient({
-	key: process.env.BIBOT_GOOGLE_API_KEY
+	key: process.env.BIBOT_GOOGLE_API_KEY,
+	Promise: Promise
 });
 
 const ConfigState = {
@@ -87,11 +88,10 @@ function stepTimezoneLocation(context, text) {
 		return;
 	}
 
-	let latlonarray = latlon.split(",");
-	console.log(`ApiKey: ${process.env.BIBOT_GOOGLE_API_KEY}, latlon: ${latlonarray}`);
 	googleMapsClient.timezone({
-		location: latlonarray
-	}).asPromise()
+		location: latlon.split(",")
+	})
+		.asPromise()
 		.then(response => {
 			console.log(`Timezone api response: ${JSON.stringify(response)}`);
 			let timezone = response.timeZoneId;

@@ -16,7 +16,6 @@ var calendar = null;
 class TelegrafWrapper {
 	static getBot() {
 		if (bot == null) {
-			console.log(`google apikey: ${process.env.BIBOT_GOOGLE_API_KEY}`);
 			bot = new Telegraf(process.env.TELEGRAM_TOKEN);
 
 			// todo: check if context is unique per user. Set 2 timers at the same time using different users
