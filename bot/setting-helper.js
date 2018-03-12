@@ -87,10 +87,11 @@ function stepTimezoneLocation(context, text) {
 		return;
 	}
 
+	let latlonarray = latlon.split(",");
+	console.log(`ApiKey: ${process.env.BIBOT_GOOGLE_API_KEY}, latlon: ${latlonarray}`);
 	googleMapsClient.timezone({
-		location: latlon.split(",")
-	})
-		.asPromise()
+		location: latlonarray
+	}).asPromise()
 		.then(response => {
 			console.log(`Timezone api response: ${JSON.stringify(response)}`);
 			let timezone = response.timeZoneId;
