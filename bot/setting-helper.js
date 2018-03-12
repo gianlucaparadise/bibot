@@ -93,8 +93,8 @@ function stepTimezoneLocation(context, text) {
 	})
 		.asPromise()
 		.then(response => {
-			console.log(`Timezone api response: ${JSON.stringify(response)}`);
-			let timezone = response.timeZoneId;
+			console.log(`Timezone api response: ${JSON.stringify(response)}\n timeZoneId: ${response.json.timeZoneId}`);
+			let timezone = response.json.timeZoneId;
 
 			context.session.stepTimezoneLocation = timezone;
 			askStepAlarmTime(context);
