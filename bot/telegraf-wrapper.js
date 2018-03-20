@@ -21,7 +21,7 @@ class TelegrafWrapper {
 			// todo: check if context is unique per user. Set 2 timers at the same time using different users
 			//bot.context({ isAsking: ConfigState.NONE });
 
-			bot.use(Telegraf.memorySession());
+			bot.use(Telegraf.session());
 			bot.use(i18n.middleware());
 
 			console.log("Bot initialized");

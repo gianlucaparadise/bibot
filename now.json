@@ -1,0 +1,10 @@
+{
+	"env": {
+		"TELEGRAM_TOKEN": "@bibot-telegram-token",
+		"BIBOT_GOOGLE_API_KEY": "@bibot-google-api-key",
+		"BIBOT_PORT": "@bibot-port",
+		"DB_URL": "@bibot-db-url"
+	},
+	"alias": "bibot",
+	"name": "bibot"
+}
