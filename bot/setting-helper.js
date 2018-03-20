@@ -73,7 +73,8 @@ function askStepTimezoneLocation(context) {
 	context.session.isAsking = ConfigState.TIMEZONE;
 	context.reply(context.i18n.t("setting-timezone-location"), Extra.markup((m) =>
 		m.resize().oneTime().keyboard([
-			m.locationRequestButton(context.i18n.t("setting-timezone-location-button"))
+			m.locationRequestButton(context.i18n.t("setting-timezone-location-button")),
+			context.i18n.t("setting-timezone-location-button-skip")
 		])));
 }
 
@@ -82,9 +83,11 @@ function stepTimezoneLocation(context, text) {
 	let isValid = (/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/).test(latlon);
 
 	if (!isValid) {
-		context
-			.reply(context.i18n.t("setting-timezone-location-wrong"))
-			.then(() => askStepTimezoneLocation(context));
+		// context
+		// 	.reply(context.i18n.t("setting-timezone-location-wrong"))
+		// 	.then(() => askStepTimezoneLocation(context));
+		context.session.stepTimezoneLocation = "Europe/London";
+		askStepAlarmTime(context);
 		return;
 	}
 
@@ -101,9 +104,14 @@ function stepTimezoneLocation(context, text) {
 		})
 		.catch(err => {
 			console.log(`Error while calling timezone api: ${JSON.stringify(err)}`);
+			// context
+			// 	.reply(context.i18n.t("setting-timezone-location-error"))
+			// 	.then(() => askStepTimezoneLocation(context));
+
+			context.session.stepTimezoneLocation = "Europe/London";
 			context
 				.reply(context.i18n.t("setting-timezone-location-error"))
-				.then(() => askStepTimezoneLocation(context));
+				.then(() => askStepAlarmTime(context));
 		});
 }
 
