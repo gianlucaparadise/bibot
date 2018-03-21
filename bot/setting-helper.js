@@ -4,7 +4,6 @@ var moment = require("moment-timezone");
 const DatabaseWrapper = require('./database-wrapper');
 const TelegrafWrapper = require('./telegraf-wrapper');
 const Extra = TelegrafWrapper.getExtra();
-const calendar = TelegrafWrapper.getCalendar();
 const googleMapsClient = require('@google/maps').createClient({
 	key: process.env.BIBOT_GOOGLE_API_KEY,
 	Promise: Promise
@@ -51,7 +50,7 @@ function stepPillType(context, text) {
 
 function askStepDate(context) {
 	context.session.isAsking = ConfigState.DATE;
-	context.reply(context.i18n.t("setting-start-date"), calendar.getCalendar());
+	context.reply(context.i18n.t("setting-start-date"), TelegrafWrapper.getCalendar(context.i18n).getCalendar());
 }
 
 function stepDate(context, text) {

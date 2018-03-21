@@ -38,16 +38,10 @@ class TelegrafWrapper {
 		return Telegraf.Extra;
 	}
 
-	static getCalendar() {
+	static getCalendar(i18n) {
 		if (!calendar) {
-			// todo: localize months and weekdays
 			calendar = new Calendar(TelegrafWrapper.getBot(), {
-				startWeekDay: 1,
-				weekDayNames: ["L", "M", "M", "G", "V", "S", "D"],
-				monthNames: [
-					"Gen", "Feb", "Mar", "Apr", "Mag", "Giu",
-					"Lug", "Ago", "Set", "Ott", "Nov", "Dic"
-				]
+				startWeekDay: 1
 			});
 		}
 
@@ -61,7 +55,42 @@ class TelegrafWrapper {
 		maxDate.setMonth(today.getMonth() + 2);
 		maxDate.setDate(0);
 
-		return calendar.setMinDate(minDate).setMaxDate(maxDate);
+		calendar
+			.setMinDate(minDate)
+			.setMaxDate(maxDate);
+
+		if (i18n) {
+			let weekDayNames = [
+				i18n.t("weekday-name-monday"),
+				i18n.t("weekday-name-tuesday"),
+				i18n.t("weekday-name-wednesday"),
+				i18n.t("weekday-name-thursday"),
+				i18n.t("weekday-name-friday"),
+				i18n.t("weekday-name-saturday"),
+				i18n.t("weekday-name-sunday")
+			];
+
+			let monthNames = [
+				i18n.t("month-name-january"),
+				i18n.t("month-name-february"),
+				i18n.t("month-name-march"),
+				i18n.t("month-name-april"),
+				i18n.t("month-name-may"),
+				i18n.t("month-name-june"),
+				i18n.t("month-name-july"),
+				i18n.t("month-name-august"),
+				i18n.t("month-name-september"),
+				i18n.t("month-name-october"),
+				i18n.t("month-name-november"),
+				i18n.t("month-name-december")
+			];
+
+			calendar
+				.setWeekDayNames(weekDayNames)
+				.setMonthNames(monthNames);
+		}
+
+		return calendar;
 	}
 }
 
