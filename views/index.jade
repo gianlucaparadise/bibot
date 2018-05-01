@@ -3,3 +3,21 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+
+  -var firstReminder = reminders[0] || undefined;
+  div
+    if !firstReminder
+      h1 No reminders
+    
+    else
+      h1 Current reminders
+      table.homeTable
+        thead
+          tr
+            each value, key in firstReminder
+              th.homeTableHeader=key
+        tbody
+          each reminder in reminders
+            tr
+              each value, key in reminder
+                td.homeTableCell=value

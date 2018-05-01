@@ -25,6 +25,10 @@ module.exports = {
 
 	remove: function (chatId, onRemoved) {
 		removeReminder(chatId, onRemoved);
+	},
+
+	getRemindersToDisplay: function (onResult) {
+		getRemindersToDisplay(onResult);
 	}
 }
 
@@ -156,5 +160,14 @@ function hasReminderByChatId(chatId, lang, onHasReminder, onNoReminder) {
 		.then(updatedDoc => {
 			console.log("updated langcode for " + chatId + " " + JSON.stringify(updatedDoc));
 		})
+		.catch(ex => console.log(ex));
+}
+
+function getRemindersToDisplay(onResult) {
+	PillReminder
+		.find({})
+		.select('-_id firstDayOfPill pillType time timezone langCode creationDate')
+		.lean()
+		.then(onResult)
 		.catch(ex => console.log(ex));
 }
