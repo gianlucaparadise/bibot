@@ -1,198 +1,218 @@
 //var moment = require("moment");
 var moment = require("moment-timezone");
 
-const DatabaseWrapper = require('./database-wrapper');
-const TelegrafWrapper = require('./telegraf-wrapper');
+const DatabaseWrapper = require("./database-wrapper");
+const TelegrafWrapper = require("./telegraf-wrapper");
 const Extra = TelegrafWrapper.getExtra();
-const googleMapsClient = require('@google/maps').createClient({
-	key: process.env.BIBOT_GOOGLE_API_KEY,
-	Promise: Promise
+const googleMapsClient = require("@google/maps").createClient({
+  key: process.env.BIBOT_GOOGLE_API_KEY,
+  Promise: Promise
 });
 
 const ConfigState = {
-	NONE: 0,
-	DATE: 1,
-	DATE_CONFIRMATION: 2, // deprecated
-	PILL_TYPE: 3,
-	ALARM_TIME: 4,
-	COMPLETED: 5,
-	TIMEZONE: 6
+  NONE: 0,
+  DATE: 1,
+  DATE_CONFIRMATION: 2, // deprecated
+  PILL_TYPE: 3,
+  ALARM_TIME: 4,
+  COMPLETED: 5,
+  TIMEZONE: 6
 };
 
 function askStepPillType(context) {
-	context.session.isAsking = ConfigState.PILL_TYPE;
-	context.reply(context.i18n.t("setting-pill-type"), Extra.HTML().markup((m) =>
-		m.inlineKeyboard([
-			m.callbackButton(context.i18n.t("setting-pill-type-21"), "twentyone"),
-			m.callbackButton(context.i18n.t("setting-pill-type-28"), "twentyeight")
-		])));
+  context.session.isAsking = ConfigState.PILL_TYPE;
+  return context.reply(
+    context.i18n.t("setting-pill-type"),
+    Extra.HTML().markup(m =>
+      m.inlineKeyboard([
+        m.callbackButton(context.i18n.t("setting-pill-type-21"), "twentyone"),
+        m.callbackButton(context.i18n.t("setting-pill-type-28"), "twentyeight")
+      ])
+    )
+  );
 }
 
 function stepPillType(context, text) {
-	let pillType = text;
+  let pillType = text;
 
-	if (pillType != "21" && pillType != "28") {
-		context
-			.reply(context.i18n.t("setting-dont-understand"))
-			.then(() => askStepPillType(context));
-		return;
-	}
+  if (pillType != "21" && pillType != "28") {
+    return context
+      .reply(context.i18n.t("setting-dont-understand"))
+      .then(() => askStepPillType(context));
+  }
 
-	context.session.stepPillType = pillType;
+  context.session.stepPillType = pillType;
 
-	if (pillType == "21") {
-		askStepDate(context);
-	}
-	else {
-		askStepAlarmTime(context);
-	}
+  if (pillType == "21") {
+    return askStepDate(context);
+  } else {
+    return askStepAlarmTime(context);
+  }
 }
 
 function askStepDate(context) {
-	context.session.isAsking = ConfigState.DATE;
-	context.reply(context.i18n.t("setting-start-date"), TelegrafWrapper.getCalendar(context.i18n).getCalendar());
+  context.session.isAsking = ConfigState.DATE;
+  return context.reply(
+    context.i18n.t("setting-start-date"),
+    TelegrafWrapper.getCalendar(context.i18n).getCalendar()
+  );
 }
 
 function stepDate(context, text) {
-	let dateRaw = text;
-	let date = moment(dateRaw, "YYYY-MM-DD");
+  let dateRaw = text;
+  let date = moment(dateRaw, "YYYY-MM-DD");
 
-	if (!date.isValid()) {
-		context
-			.reply(context.i18n.t("setting-wrong-date"))
-			.then(() => askStepDate(context));
-		return;
-	}
+  if (!date.isValid()) {
+    return context
+      .reply(context.i18n.t("setting-wrong-date"))
+      .then(() => askStepDate(context));
+  }
 
-	context.session.stepDate = date;
-	askStepTimezoneLocation(context);
+  context.session.stepDate = date;
+  return askStepTimezoneLocation(context);
 }
 
 function askStepTimezoneLocation(context) {
-	context.session.isAsking = ConfigState.TIMEZONE;
-	context.reply(context.i18n.t("setting-timezone-location"), Extra.markup((m) =>
-		m.resize().oneTime().keyboard([
-			m.locationRequestButton(context.i18n.t("setting-timezone-location-button")),
-			context.i18n.t("setting-timezone-location-button-skip")
-		])));
+  context.session.isAsking = ConfigState.TIMEZONE;
+  return context.reply(
+    context.i18n.t("setting-timezone-location"),
+    Extra.markup(m =>
+      m
+        .resize()
+        .oneTime()
+        .keyboard([
+          m.locationRequestButton(
+            context.i18n.t("setting-timezone-location-button")
+          ),
+          context.i18n.t("setting-timezone-location-button-skip")
+        ])
+    )
+  );
 }
 
 function stepTimezoneLocation(context, text) {
-	let latlon = text;
-	let isValid = (/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/).test(latlon);
+  let latlon = text;
+  let isValid = /^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/.test(
+    latlon
+  );
 
-	if (!isValid) {
-		// context
-		// 	.reply(context.i18n.t("setting-timezone-location-wrong"))
-		// 	.then(() => askStepTimezoneLocation(context));
-		context.session.stepTimezoneLocation = "Europe/London";
-		askStepAlarmTime(context);
-		return;
-	}
+  if (!isValid) {
+    // context
+    // 	.reply(context.i18n.t("setting-timezone-location-wrong"))
+    // 	.then(() => askStepTimezoneLocation(context));
+    context.session.stepTimezoneLocation = "Europe/London";
+    return askStepAlarmTime(context);
+  }
 
-	googleMapsClient.timezone({
-		location: latlon.split(",")
-	})
-		.asPromise()
-		.then(response => {
-			console.log(`Timezone api response: ${JSON.stringify(response)}\n timeZoneId: ${response.json.timeZoneId}`);
-			let timezone = response.json.timeZoneId;
+  return googleMapsClient
+    .timezone({
+      location: latlon.split(",")
+    })
+    .asPromise()
+    .then(response => {
+      console.log(
+        `Timezone api response: ${JSON.stringify(response)}\n timeZoneId: ${
+          response.json.timeZoneId
+        }`
+      );
+      let timezone = response.json.timeZoneId;
 
-			context.session.stepTimezoneLocation = timezone;
-			askStepAlarmTime(context);
-		})
-		.catch(err => {
-			console.log(`Error while calling timezone api: ${JSON.stringify(err)}`);
-			// context
-			// 	.reply(context.i18n.t("setting-timezone-location-error"))
-			// 	.then(() => askStepTimezoneLocation(context));
+      context.session.stepTimezoneLocation = timezone;
+      return askStepAlarmTime(context);
+    })
+    .catch(err => {
+      console.log(`Error while calling timezone api: ${JSON.stringify(err)}`);
+      // context
+      // 	.reply(context.i18n.t("setting-timezone-location-error"))
+      // 	.then(() => askStepTimezoneLocation(context));
 
-			context.session.stepTimezoneLocation = "Europe/London";
-			context
-				.reply(context.i18n.t("setting-timezone-location-error"))
-				.then(() => askStepAlarmTime(context));
-		});
+      context.session.stepTimezoneLocation = "Europe/London";
+      return context
+        .reply(context.i18n.t("setting-timezone-location-error"))
+        .then(() => askStepAlarmTime(context));
+    });
 }
 
 function askStepAlarmTime(context) {
-	context.session.isAsking = ConfigState.ALARM_TIME;
-	context.reply(context.i18n.t("setting-alarm-time"));
+  context.session.isAsking = ConfigState.ALARM_TIME;
+  return context.reply(context.i18n.t("setting-alarm-time"));
 }
 
 function stepAlarmTime(context, text) {
-	let timeRaw = text;
-	let timezone = context.session.stepTimezoneLocation;
-	// use moment.unix(context.message.date) for getting timezone
-	let time = moment.tz(timeRaw, ['h:m a', 'H:m'], timezone);
+  let timeRaw = text;
+  let timezone = context.session.stepTimezoneLocation;
+  // use moment.unix(context.message.date) for getting timezone
+  let time = moment.tz(timeRaw, ["h:m a", "H:m"], timezone);
 
-	if (!time.isValid()) {
-		context.reply(context.i18n.t("setting-dont-understand-time"));
-		return;
-	}
+  if (!time.isValid()) {
+    return context.reply(context.i18n.t("setting-dont-understand-time"));
+  }
 
-	context.session.isAsking = ConfigState.COMPLETED;
-	context.session.stepAlarmTime = time;
+  context.session.isAsking = ConfigState.COMPLETED;
+  context.session.stepAlarmTime = time;
 
-	setScheduling(context);
+  setScheduling(context);
 }
 
 function setScheduling(context) {
-	let startingDateMoment = context.session.stepDate;
-	// todo: if date is older than now, add 3 weeks
-	let startingDate = startingDateMoment ? startingDateMoment.utc().format("YYYY-MM-DD") : "";
+  let startingDateMoment = context.session.stepDate;
+  // todo: if date is older than now, add 3 weeks
+  let startingDate = startingDateMoment
+    ? startingDateMoment.utc().format("YYYY-MM-DD")
+    : "";
 
-	let timeMoment = context.session.stepAlarmTime;
-	let time = timeMoment.utc().format("HH:mm");
+  let timeMoment = context.session.stepAlarmTime;
+  let time = timeMoment.utc().format("HH:mm");
 
-	let pillType = context.session.stepPillType;
+  let pillType = context.session.stepPillType;
 
-	let timezone = context.session.stepTimezoneLocation;
-	let id = context.chat.id;
-	let lang = context.from.language_code;
-	DatabaseWrapper.insert(id, startingDate, pillType, time, timezone, lang, hasRemoved => {
-		context
-			.reply(context.i18n.t("setting-completed"))
-			.then(() => {
-				if (hasRemoved)
-					context.reply(context.i18n.t("setting-overwritten"));
-			});
-	});
+  let timezone = context.session.stepTimezoneLocation;
+  let id = context.chat.id;
+  let lang = context.from.language_code;
+  DatabaseWrapper.insert(
+    id,
+    startingDate,
+    pillType,
+    time,
+    timezone,
+    lang,
+    hasRemoved => {
+      context.reply(context.i18n.t("setting-completed")).then(() => {
+        if (hasRemoved) context.reply(context.i18n.t("setting-overwritten"));
+      });
+    }
+  );
 }
 
 function processMessage(context, text) {
-	let isAsking = context.session.isAsking || ConfigState.NONE;
-	console.log("isAsking: " + isAsking)
+  let isAsking = context.session.isAsking || ConfigState.NONE;
+  console.log("isAsking: " + isAsking);
 
-	switch (isAsking) {
-		case ConfigState.DATE:
-			stepDate(context, text);
-			break;
+  switch (isAsking) {
+    case ConfigState.DATE:
+      return stepDate(context, text);
 
-		case ConfigState.PILL_TYPE:
-			stepPillType(context, text);
-			break;
+    case ConfigState.PILL_TYPE:
+      return stepPillType(context, text);
 
-		case ConfigState.ALARM_TIME:
-			stepAlarmTime(context, text);
-			break;
+    case ConfigState.ALARM_TIME:
+      return stepAlarmTime(context, text);
 
-		case ConfigState.TIMEZONE:
-			stepTimezoneLocation(context, text);
-			break;
-	}
+    case ConfigState.TIMEZONE:
+      return stepTimezoneLocation(context, text);
+  }
 }
 
 const settingHelper = {
+  ConfigState: ConfigState,
 
-	ConfigState: ConfigState,
+  startSettingFlow: function(context) {
+    return askStepPillType(context);
+  },
 
-	startSettingFlow: function (context) {
-		askStepPillType(context);
-	},
-
-	processMessage: function (context, text) {
-		processMessage(context, text);
-	}
+  processMessage: function(context, text) {
+    return processMessage(context, text);
+  }
 };
 
 module.exports = settingHelper;
