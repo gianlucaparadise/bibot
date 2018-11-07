@@ -17,7 +17,7 @@
     "mongoose": "^4.10.8",
     "morgan": "~1.7.0",
     "serve-favicon": "~2.3.0",
-    "telegraf": "^3.19.0",
+    "telegraf": "^3.25.0",
     "telegraf-calendar-telegram": "^1.5.3",
     "telegraf-i18n": "^6.0.4"
   },
