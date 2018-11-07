@@ -26,8 +26,8 @@ function shouldSendPillWarning(startingDateRaw, pillType) {
 	console.log("shouldWarn: " + startingDateRaw + " " + pillType);
 
 	if (pillType == "21") {
-		let startingDate = moment(startingDateRaw);
-		let today = moment(new Date()).utc();
+		let startingDate = moment.utc(startingDateRaw);
+		let today = moment.utc(new Date());
 
 		let pastDays = startingDate.diff(today, 'days');
 		// fixme: this number will get bigger and bigger

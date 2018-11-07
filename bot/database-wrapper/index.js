@@ -33,7 +33,7 @@ module.exports = {
 }
 
 function getAllReminders(onReminder) {
-	let time = moment().format("HH:mm");
+	let time = moment.utc().format("HH:mm");
 	console.log('find by time: \'' + time + '\';');
 	let condition = {
 		$or: [
@@ -77,7 +77,7 @@ function setAnswered(chatId, lang) {
 }
 
 function setDelay(chatId, minutes, lang, onUpdated) {
-	let delayedTo = moment().add(minutes, "minute").format("HH:mm");
+	let delayedTo = moment.utc().add(minutes, "minute").format("HH:mm");
 	console.log("setting delayed to " + delayedTo);
 	PillReminder
 		.findOneAndUpdate({ chatId: chatId, isWaitingForAnswer: true }, { delayedTo: delayedTo, langCode: lang })

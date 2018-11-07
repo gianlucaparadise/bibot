@@ -45,7 +45,7 @@ function connect(next) {
 }
 
 function getAllReminders(client, onReminder) {
-	let time = moment().format("HH:mm");
+	let time = moment.utc().format("HH:mm");
 	console.log('SELECT * FROM pillReminders WHERE time = \'' + time + '\';');
 
 	client

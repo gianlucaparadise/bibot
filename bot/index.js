@@ -53,7 +53,7 @@ bot.command("check", context => {
     id,
     lang,
     (firstDayOfPill, pillType, time, timezone) => {
-      let newTime = moment(time, "HH:mm")
+      let newTime = moment.utc(time, "HH:mm")
         .tz(timezone)
         .format("HH:mm");
       context.reply(
@@ -156,6 +156,10 @@ bot.action(/pill-remind-later-\d+/g, context => {
       context.i18n.t("pill-remind-later-confirmation", { delayText: delayText })
     );
   });
+});
+
+bot.catch((err) => {
+  console.log("Error in bot:", err);
 });
 
 PillNotifier.start();

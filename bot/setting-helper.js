@@ -60,7 +60,7 @@ function askStepDate(context) {
 
 function stepDate(context, text) {
   let dateRaw = text;
-  let date = moment(dateRaw, "YYYY-MM-DD");
+  let date = moment.utc(dateRaw, "YYYY-MM-DD");
 
   if (!date.isValid()) {
     return context
@@ -112,7 +112,7 @@ function stepTimezoneLocation(context, text) {
     .then(response => {
       console.log(
         `Timezone api response: ${JSON.stringify(response)}\n timeZoneId: ${
-          response.json.timeZoneId
+        response.json.timeZoneId
         }`
       );
       let timezone = response.json.timeZoneId;
@@ -206,11 +206,11 @@ function processMessage(context, text) {
 const settingHelper = {
   ConfigState: ConfigState,
 
-  startSettingFlow: function(context) {
+  startSettingFlow: function (context) {
     return askStepPillType(context);
   },
 
-  processMessage: function(context, text) {
+  processMessage: function (context, text) {
     return processMessage(context, text);
   }
 };
