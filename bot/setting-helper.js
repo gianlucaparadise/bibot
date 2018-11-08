@@ -135,7 +135,10 @@ function stepTimezoneLocation(context, text) {
 
 function askStepAlarmTime(context) {
   context.session.isAsking = ConfigState.ALARM_TIME;
-  return context.reply(context.i18n.t("setting-alarm-time"));
+  return context.reply(
+    context.i18n.t("setting-alarm-time"),
+    Extra.markup(m => m.removeKeyboard())
+  );
 }
 
 function stepAlarmTime(context, text) {
