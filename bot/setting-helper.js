@@ -46,7 +46,7 @@ function stepPillType(context, text) {
   if (pillType == "21") {
     return askStepDate(context);
   } else {
-    return askStepAlarmTime(context);
+    return askStepTimezoneLocation(context);
   }
 }
 
