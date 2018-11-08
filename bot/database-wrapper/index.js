@@ -11,8 +11,8 @@ module.exports = {
 		setAnswered(chatId, lang);
 	},
 
-	setDelay: function (chatId, minutes, lang, onUpdated) {
-		setDelay(chatId, minutes, lang, onUpdated);
+	setDelay: function (chatId, minutes, lang) {
+		return setDelay(chatId, minutes, lang);
 	},
 
 	insert: function (chatId, date, pillType, time, timezone, lang, onInserted) {
@@ -76,22 +76,24 @@ function setAnswered(chatId, lang) {
 		.catch((ex) => console.log(ex));
 }
 
-function setDelay(chatId, minutes, lang, onUpdated) {
-	let delayedTo = moment.utc().add(minutes, "minute").format("HH:mm");
-	console.log("setting delayed to " + delayedTo);
-	PillReminder
-		.findOneAndUpdate({ chatId: chatId, isWaitingForAnswer: true }, { delayedTo: delayedTo, langCode: lang })
-		.then(updatedDoc => {
-			console.log("set delay for " + chatId + " " + JSON.stringify(updatedDoc));
-			if (!onUpdated) return;
-			if (updatedDoc) {
-				onUpdated(true);
-			}
-			else {
-				onUpdated(false);
-			}
-		})
-		.catch((ex) => console.log(ex));
+function setDelay(chatId, minutes, lang) {
+	return new Promise((resolve, reject) => {
+		let delayedTo = moment.utc().add(minutes, "minute").format("HH:mm");
+		console.log("setting delayed to " + delayedTo);
+		PillReminder
+			.findOneAndUpdate({ chatId: chatId, isWaitingForAnswer: true }, { delayedTo: delayedTo, langCode: lang })
+			.then(updatedDoc => {
+				console.log("set delay for " + chatId + " " + JSON.stringify(updatedDoc));
+				if (!resolve) return;
+				if (updatedDoc) {
+					resolve(true);
+				}
+				else {
+					resolve(false);
+				}
+			})
+			.catch(reject);
+	});
 
 }
 

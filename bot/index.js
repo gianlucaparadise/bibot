@@ -86,12 +86,14 @@ bot.on("location", context => {
 
 bot.action("twentyone", context => {
   console.log("Action twentyone");
-  return settingHelper.processMessage(context, "21");
+  return context.answerCbQuery()
+    .then(() => settingHelper.processMessage(context, "21"));
 });
 
 bot.action("twentyeight", context => {
   console.log("Action twentyeight");
-  return settingHelper.processMessage(context, "28");
+  return context.answerCbQuery()
+    .then(() => settingHelper.processMessage(context, "28"));
 });
 
 bot.action("pill-taken", context => {
@@ -99,63 +101,68 @@ bot.action("pill-taken", context => {
   let id = context.chat.id;
   let lang = context.from.language_code;
   DatabaseWrapper.setAnswered(id, lang);
-  return context.reply(context.i18n.t("pill-taken"));
+  return context.answerCbQuery()
+    .then(() => context.reply(context.i18n.t("pill-taken")));
 });
 
 bot.action("pill-remind-later", context => {
   console.log("pill-remind-later");
-  return context.reply(
-    context.i18n.t("pill-remind-later"),
-    Extra.HTML().markup(m =>
-      m.inlineKeyboard([
-        [
-          m.callbackButton(
-            context.i18n.t("pill-remind-later-10"),
-            "pill-remind-later-10"
-          ),
-          m.callbackButton(
-            context.i18n.t("pill-remind-later-30"),
-            "pill-remind-later-30"
-          )
-        ],
-        [
-          m.callbackButton(
-            context.i18n.t("pill-remind-later-60"),
-            "pill-remind-later-60"
-          ),
-          m.callbackButton(
-            context.i18n.t("pill-remind-later-120"),
-            "pill-remind-later-120"
-          )
-        ]
-      ])
-    )
-  );
+  return context.answerCbQuery()
+    .then(() => context.reply(
+      context.i18n.t("pill-remind-later"),
+      Extra.HTML().markup(m =>
+        m.inlineKeyboard([
+          [
+            m.callbackButton(
+              context.i18n.t("pill-remind-later-10"),
+              "pill-remind-later-10"
+            ),
+            m.callbackButton(
+              context.i18n.t("pill-remind-later-30"),
+              "pill-remind-later-30"
+            )
+          ],
+          [
+            m.callbackButton(
+              context.i18n.t("pill-remind-later-60"),
+              "pill-remind-later-60"
+            ),
+            m.callbackButton(
+              context.i18n.t("pill-remind-later-120"),
+              "pill-remind-later-120"
+            )
+          ]
+        ])
+      )
+    ));
 });
 
 bot.action(/pill-remind-later-\d+/g, context => {
   let minutes = context.match[0].replace("pill-remind-later-", "");
   let id = context.chat.id;
   let lang = context.from.language_code;
-  DatabaseWrapper.setDelay(id, minutes, lang, hasUpdated => {
-    if (!hasUpdated) return;
+  return DatabaseWrapper
+    .setDelay(id, minutes, lang)
+    .then(hasUpdated => {
+      if (!hasUpdated) return;
 
-    let delayText;
-    if (minutes < 60) {
-      delayText = context.i18n.t("pill-remind-later-confirmation-minutes", {
-        minutes: minutes
-      });
-    } else {
-      let hours = minutes / 60;
-      delayText = context.i18n.t("pill-remind-later-confirmation-hours", {
-        hours: hours
-      });
-    }
+      let delayText;
+      if (minutes < 60) {
+        delayText = context.i18n.t("pill-remind-later-confirmation-minutes", {
+          minutes: minutes
+        });
+      } else {
+        let hours = minutes / 60;
+        delayText = context.i18n.t("pill-remind-later-confirmation-hours", {
+          hours: hours
+        });
+      }
 
-    context.reply(
-      context.i18n.t("pill-remind-later-confirmation", { delayText: delayText })
-    );
-  });
+      return context.answerCbQuery()
+        .then(() => context.reply(
+          context.i18n.t("pill-remind-later-confirmation", { delayText: delayText })
+        ));
+    });
 });
 
 bot.catch((err) => {
