@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "./bin/www",
-    "deploy": "now --public && now alias && now remove bibot --safe -y"
+    "deploy": "now remove bibot -y && now --public && now alias"
   },
   "dependencies": {
     "@google/maps": "^0.4.5",
