@@ -15,20 +15,20 @@ module.exports = {
 		return setDelay(chatId, minutes, lang);
 	},
 
-	insert: function (chatId, date, pillType, time, timezone, lang, onInserted) {
-		insertReminder(chatId, date, pillType, time, timezone, lang, onInserted);
+	insert: function (chatId, date, pillType, time, timezone, lang) {
+		return insertReminder(chatId, date, pillType, time, timezone, lang);
 	},
 
 	hasReminder: function (chatId, lang, onHasReminder, onNoReminder) {
 		hasReminderByChatId(chatId, lang, onHasReminder, onNoReminder);
 	},
 
-	remove: function (chatId, onRemoved) {
-		removeReminder(chatId, onRemoved);
+	remove: function (chatId) {
+		return removeReminder(chatId);
 	},
 
-	getRemindersToDisplay: function (onResult) {
-		getRemindersToDisplay(onResult);
+	getRemindersToDisplay: function () {
+		return getRemindersToDisplay();
 	}
 }
 
@@ -97,44 +97,50 @@ function setDelay(chatId, minutes, lang) {
 
 }
 
-function insertReminder(chatId, firstDayOfPill, pillType, time, timezone, lang, onInserted) {
-	console.log(`inserting ${chatId} ${firstDayOfPill} ${pillType} ${time} ${timezone} ${lang}`);
+function insertReminder(chatId, firstDayOfPill, pillType, time, timezone, lang) {
+	return new Promise((resolve, reject) => {
+		console.log(`inserting ${chatId} ${firstDayOfPill} ${pillType} ${time} ${timezone} ${lang}`);
 
-	// I have to remove all the reminders for this chatId
-	removeReminder(chatId, hasRemoved => {
+		// I have to remove all the reminders for this chatId
+		removeReminder(chatId)
+			.then(hasRemoved => {
 
-		let reminder = new PillReminder({
-			chatId: chatId,
-			firstDayOfPill: firstDayOfPill,
-			pillType: pillType,
-			time: time,
-			timezone: timezone,
-			langCode: lang
-		});
+				let reminder = new PillReminder({
+					chatId: chatId,
+					firstDayOfPill: firstDayOfPill,
+					pillType: pillType,
+					time: time,
+					timezone: timezone,
+					langCode: lang
+				});
 
-		reminder
-			.save(saved => {
-				console.log("inserted");
-				console.log(JSON.stringify(saved));
-				if (onInserted) {
-					onInserted(hasRemoved);
-				}
+				reminder
+					.save(saved => {
+						console.log("inserted");
+						console.log(JSON.stringify(saved));
+						if (resolve) {
+							resolve(hasRemoved);
+						}
+					})
+					.catch(reject);
 			})
-			.catch(ex => console.log(ex));
+			.catch(reject);
 	});
 }
 
-function removeReminder(chatId, onRemoved) {
+function removeReminder(chatId) {
 	console.log("Deleting: " + chatId);
 
-	PillReminder
-		.remove({ chatId: chatId })
-		.then((res) => {
-			let hasRemoved = res.result.n > 0;
-			console.log("Deleted: " + chatId + " n: " + res.result.n);
-			onRemoved(hasRemoved);
-		})
-		.catch(ex => console.log(ex));
+	return new Promise((resolve, reject) => {
+		PillReminder
+			.remove({ chatId: chatId })
+			.then((res) => {
+				let hasRemoved = res.result.n > 0;
+				console.log("Deleted: " + chatId + " n: " + res.result.n);
+				resolve(hasRemoved);
+			})
+			.catch(reject);
+	});
 }
 
 function hasReminderByChatId(chatId, lang, onHasReminder, onNoReminder) {
@@ -165,11 +171,13 @@ function hasReminderByChatId(chatId, lang, onHasReminder, onNoReminder) {
 		.catch(ex => console.log(ex));
 }
 
-function getRemindersToDisplay(onResult) {
-	PillReminder
-		.find({})
-		.select('-_id firstDayOfPill pillType time timezone langCode creationDate')
-		.lean()
-		.then(onResult)
-		.catch(ex => console.log(ex));
+function getRemindersToDisplay() {
+	return new Promise((resolve, reject) => {
+		PillReminder
+			.find({})
+			.select('-_id firstDayOfPill pillType time timezone langCode creationDate')
+			.lean()
+			.then(resolve)
+			.catch(reject);
+	});
 }

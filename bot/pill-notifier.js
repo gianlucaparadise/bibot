@@ -54,6 +54,6 @@ module.exports = {
 			DatabaseWrapper.check(onReminder);
 		}, 60000); // every minute
 
-		//DatabaseWrapper.check(onReminder); // I check this minute
+		DatabaseWrapper.check(onReminder); // I check this minute
 	}
 }

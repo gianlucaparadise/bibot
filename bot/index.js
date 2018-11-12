@@ -30,18 +30,20 @@ bot.command("stop", context => {
   context.session.isAsking = ConfigState.NONE;
 
   let id = context.chat.id;
-  DatabaseWrapper.remove(id, hasRemoved => {
-    if (hasRemoved) {
-      context
-        .reply(context.i18n.t("remider-removed"))
-        .then(() => context.reply(context.i18n.t("reminder-register-another")))
-        .then(() => context.reply(context.i18n.t("goodbye")));
-    } else {
-      context
-        .reply(context.i18n.t("reminder-none"))
-        .then(() => context.reply(context.i18n.t("reminder-register-another")));
-    }
-  });
+  DatabaseWrapper.remove(id)
+    .then(hasRemoved => {
+      if (hasRemoved) {
+        context
+          .reply(context.i18n.t("remider-removed"))
+          .then(() => context.reply(context.i18n.t("reminder-register-another")))
+          .then(() => context.reply(context.i18n.t("goodbye")));
+      } else {
+        context
+          .reply(context.i18n.t("reminder-none"))
+          .then(() => context.reply(context.i18n.t("reminder-register-another")));
+      }
+    })
+    .catch(ex => console.log(ex));
 });
 
 bot.command("check", context => {
@@ -162,7 +164,8 @@ bot.action(/pill-remind-later-\d+/g, context => {
         .then(() => context.reply(
           context.i18n.t("pill-remind-later-confirmation", { delayText: delayText })
         ));
-    });
+    })
+    .catch(ex => console.log(ex));
 });
 
 bot.catch((err) => {

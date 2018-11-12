@@ -154,7 +154,13 @@ function stepAlarmTime(context, text) {
   context.session.isAsking = ConfigState.COMPLETED;
   context.session.stepAlarmTime = time;
 
-  setScheduling(context);
+  return setScheduling(context)
+    .then(hasRemoved => {
+      return context.reply(context.i18n.t("setting-completed")).then(() => {
+        if (hasRemoved) context.reply(context.i18n.t("setting-overwritten"));
+      });
+    })
+    .catch(ex => console.log(ex));
 }
 
 function setScheduling(context) {
@@ -172,18 +178,13 @@ function setScheduling(context) {
   let timezone = context.session.stepTimezoneLocation;
   let id = context.chat.id;
   let lang = context.from.language_code;
-  DatabaseWrapper.insert(
+  return DatabaseWrapper.insert(
     id,
     startingDate,
     pillType,
     time,
     timezone,
-    lang,
-    hasRemoved => {
-      context.reply(context.i18n.t("setting-completed")).then(() => {
-        if (hasRemoved) context.reply(context.i18n.t("setting-overwritten"));
-      });
-    }
+    lang
   );
 }
 
