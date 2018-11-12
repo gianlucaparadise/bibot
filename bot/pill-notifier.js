@@ -9,17 +9,18 @@ const i18n = telegrafWrapper.getI18n();
 
 function onReminder(chatId, firstDayOfPill, pillType, lang) {
 	let shouldWarn = shouldSendPillWarning(firstDayOfPill, pillType);
-	if (shouldWarn) {
-		// todo: insert plenty of strings and pick one randomly.
-		telegram.sendMessage(chatId, i18n.t(lang, "reminder-message"), Extra.HTML().markup((m) =>
-			m.inlineKeyboard([
-				m.callbackButton(i18n.t(lang, "reminder-delay"), "pill-remind-later"),
-				m.callbackButton(i18n.t(lang, "reminder-taken"), "pill-taken")
-			])
-		));
+	if (!shouldWarn) return;
 
-		// todo: ask this again untill it gets an answer
-	}
+	DatabaseWrapper.setWaitingForAnswer(chatId, lang)
+		.then(() => {
+			// todo: insert plenty of strings and pick one randomly.
+			telegram.sendMessage(chatId, i18n.t(lang, "reminder-message"), Extra.HTML().markup((m) =>
+				m.inlineKeyboard([
+					m.callbackButton(i18n.t(lang, "reminder-delay"), "pill-remind-later"),
+					m.callbackButton(i18n.t(lang, "reminder-taken"), "pill-taken")
+				])
+			));
+		});
 }
 
 function shouldSendPillWarning(startingDateRaw, pillType) {
