@@ -76,12 +76,12 @@ function setWaitingForAnswer(chatId, lang) {
 
 function setAnswered(chatId, lang) {
 	return new Promise((resolve, reject) => {
-		console.log("setting aswered for " + chatId);
+		console.log("setting answered for " + chatId);
 		PillReminder
-			.update({ chatId: chatId }, { isWaitingForAnswer: false, delayedTo: null, langCode: lang })
-			.then((a) => {
-				console.log("set aswered for " + chatId + "\n" + JSON.stringify(a));
-				resolve();
+			.update({ chatId: chatId, isWaitingForAnswer: true }, { isWaitingForAnswer: false, delayedTo: null, langCode: lang })
+			.then((result) => {
+				console.log("set answered for " + chatId + "\n" + JSON.stringify(result));
+				resolve(result.nModified);
 			})
 			.catch(reject);
 	});

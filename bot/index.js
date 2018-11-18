@@ -17,7 +17,6 @@ calendar.setDateListener((context, date) => {
 bot.command("start", context => {
   console.log("Start from: ", JSON.stringify(context.from));
 
-  // todo: localize strings in english
   let text = context.i18n.t("greeting");
 
   return context
@@ -80,7 +79,11 @@ bot.on("text", context => {
     console.log("thumbs-up, pill-taken");
     return PillNotifier
       .setPillTaken(context)
-      .then(() => context.reply(context.i18n.t("pill-taken")));
+      .then((count) => {
+        if (count > 0) {
+          return context.reply(context.i18n.t("pill-taken"));
+        }
+      });
   }
 
   return settingHelper.processMessage(context, context.message.text);
@@ -110,8 +113,14 @@ bot.action("pill-taken", context => {
   console.log("pill-taken");
   return PillNotifier
     .setPillTaken(context)
-    .then(() => context.answerCbQuery())
-    .then(() => context.reply(context.i18n.t("pill-taken")));
+    .then((count) => {
+      return context.answerCbQuery()
+        .then(() => {
+          if (count > 0) {
+            return context.reply(context.i18n.t("pill-taken"));
+          }
+        });
+    });
 });
 
 bot.action("pill-remind-later", context => {
