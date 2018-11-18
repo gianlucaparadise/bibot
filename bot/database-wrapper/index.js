@@ -12,7 +12,7 @@ module.exports = {
 	},
 
 	setAnswered: function (chatId, lang) {
-		setAnswered(chatId, lang);
+		return setAnswered(chatId, lang);
 	},
 
 	setDelay: function (chatId, minutes, lang) {
@@ -75,13 +75,16 @@ function setWaitingForAnswer(chatId, lang) {
 }
 
 function setAnswered(chatId, lang) {
-	console.log("setting aswered for " + chatId);
-	PillReminder
-		.update({ chatId: chatId }, { isWaitingForAnswer: false, delayedTo: null, langCode: lang })
-		.then((a) => {
-			console.log("set aswered for " + chatId + "\n" + JSON.stringify(a));
-		})
-		.catch((ex) => console.log(ex));
+	return new Promise((resolve, reject) => {
+		console.log("setting aswered for " + chatId);
+		PillReminder
+			.update({ chatId: chatId }, { isWaitingForAnswer: false, delayedTo: null, langCode: lang })
+			.then((a) => {
+				console.log("set aswered for " + chatId + "\n" + JSON.stringify(a));
+				resolve();
+			})
+			.catch(reject);
+	});
 }
 
 function setDelay(chatId, minutes, lang) {

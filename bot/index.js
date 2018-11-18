@@ -75,6 +75,14 @@ bot.command("check", context => {
 
 bot.on("text", context => {
   console.log("Received a text message:", JSON.stringify(context.message));
+
+  if (context.message.text.startsWith("👍")) {
+    console.log("thumbs-up, pill-taken");
+    return PillNotifier
+      .setPillTaken(context)
+      .then(() => context.reply(context.i18n.t("pill-taken")));
+  }
+
   return settingHelper.processMessage(context, context.message.text);
 });
 
@@ -100,10 +108,9 @@ bot.action("twentyeight", context => {
 
 bot.action("pill-taken", context => {
   console.log("pill-taken");
-  let id = context.chat.id;
-  let lang = context.from.language_code;
-  DatabaseWrapper.setAnswered(id, lang);
-  return context.answerCbQuery()
+  return PillNotifier
+    .setPillTaken(context)
+    .then(() => context.answerCbQuery())
     .then(() => context.reply(context.i18n.t("pill-taken")));
 });
 

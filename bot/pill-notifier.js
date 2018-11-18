@@ -56,5 +56,13 @@ module.exports = {
 		}, 60000); // every minute
 
 		DatabaseWrapper.check(onReminder); // I check this minute
+	},
+
+	setPillTaken: function (context) {
+		console.log("setting pill taken");
+		let id = context.chat.id;
+		let lang = context.from.language_code;
+		return DatabaseWrapper
+			.setAnswered(id, lang);
 	}
 }
