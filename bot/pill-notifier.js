@@ -27,16 +27,7 @@ function shouldSendPillWarning(startingDateRaw, pillType) {
 	console.log("shouldWarn: " + startingDateRaw + " " + pillType);
 
 	if (pillType == "21") {
-		let startingDate = moment.utc(startingDateRaw);
-		let today = moment.utc(new Date());
-
-		let pastDays = startingDate.diff(today, 'days');
-		// fixme: this number will get bigger and bigger
-		pastDays = Math.abs(pastDays);
-
-		let pillDay = (pastDays % 28) + 1; // this is a number between 1 and 28
-
-		console.log("shouldWarn - pastDays: " + pastDays + " pillDay: " + pillDay);
+		let pillDay = calculatePillDay(startingDateRaw);
 
 		if (pillDay > 21) {
 			return false;
@@ -46,6 +37,20 @@ function shouldSendPillWarning(startingDateRaw, pillType) {
 	return true;
 }
 
+function calculatePillDay(startingDateRaw) {
+	let startingDate = moment.utc(startingDateRaw);
+	let today = moment.utc(new Date());
+
+	let pastDays = startingDate.diff(today, 'days');
+	// fixme: this number will get bigger and bigger
+	pastDays = Math.abs(pastDays);
+
+	let pillDay = (pastDays % 28) + 1; // this is a number between 1 and 28
+
+	console.log("calculatePillDay - pastDays: " + pastDays + " pillDay: " + pillDay);
+
+	return pillDay;
+}
 
 module.exports = {
 	start: function () {
@@ -64,5 +69,9 @@ module.exports = {
 		let lang = context.from.language_code;
 		return DatabaseWrapper
 			.setAnswered(id, lang);
+	},
+
+	calculatePillDay: function (firstDayOfPill) {
+		return calculatePillDay(firstDayOfPill);
 	}
 }

@@ -1,10 +1,11 @@
 {
 	"greeting": "Ciao ${from.first_name}! Sono Bibot",
-	"remider-removed": "Hai rimosso correttamente il promemoria",
+	"reminder-removed": "Hai rimosso correttamente il promemoria",
 	"reminder-register-another": "Puoi registrarne un altro con il comando /start",
 	"goodbye": "Arrivederci!",
 	"reminder-none": "Non hai nessun promemoria salvato",
 	"reminder-recap": "Ciao! Hai impostato un avviso per una pillola da ${pillType} giorni alle ore ${newTime}",
+	"reminder-recap-pill-day": "E sei al giorno numero ${dayNumber} della pillola",
 	"greeting-reminder-none": "Ciao! Non hai nessun promemoria salvato",
 	"pill-taken": "Molto bene!",
 	"pill-remind-later": "Tra quanto vuoi che ti avvisi?",

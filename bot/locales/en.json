@@ -1,10 +1,11 @@
 {
 	"greeting": "Hi ${from.first_name}! I'm Bibot",
-	"remider-removed": "You removed correctly your reminder",
+	"reminder-removed": "You removed correctly your reminder",
 	"reminder-register-another": "You can register another one using the command /start",
 	"goodbye": "Goodbye!",
 	"reminder-none": "You don't have any saved reminder",
 	"reminder-recap": "Hi! You set a reminder for a ${pillType} days pill at ${newTime}",
+	"reminder-recap-pill-day": "And you're on day number ${dayNumber} of the pill",
 	"greeting-reminder-none": "Hi! You don't have any saved reminder",
 	"pill-taken": "Very good!",
 	"pill-remind-later": "When would you like me to alert you?",

@@ -33,7 +33,7 @@ bot.command("stop", context => {
     .then(hasRemoved => {
       if (hasRemoved) {
         context
-          .reply(context.i18n.t("remider-removed"))
+          .reply(context.i18n.t("reminder-removed"))
           .then(() => context.reply(context.i18n.t("reminder-register-another")))
           .then(() => context.reply(context.i18n.t("goodbye")));
       } else {
@@ -62,7 +62,16 @@ bot.command("check", context => {
           pillType: pillType,
           newTime: newTime
         })
-      );
+      ).then(() => {
+        if (pillType != "21") return;
+
+        let pillDay = PillNotifier.calculatePillDay(firstDayOfPill);
+        context.reply(
+          context.i18n.t("reminder-recap-pill-day", {
+            dayNumber: pillDay
+          })
+        );
+      });
     },
     () => {
       context
