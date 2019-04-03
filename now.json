@@ -1,4 +1,5 @@
 {
+	"version": 1,
 	"env": {
 		"TELEGRAM_TOKEN": "@bibot-telegram-token",
 		"BIBOT_GOOGLE_API_KEY": "@bibot-google-api-key",

@@ -5,6 +5,7 @@ const ConfigState = settingHelper.ConfigState;
 const DatabaseWrapper = require("./database-wrapper");
 const PillNotifier = require("./pill-notifier");
 const TelegrafWrapper = require("./telegraf-wrapper");
+const Logger = require('./../logger');
 
 const bot = TelegrafWrapper.getBot();
 const Extra = TelegrafWrapper.getExtra();
@@ -15,7 +16,7 @@ calendar.setDateListener((context, date) => {
 });
 
 bot.command("start", context => {
-  console.log("Start from: ", JSON.stringify(context.from));
+  Logger.info("Start from: ", JSON.stringify(context.from));
 
   let text = context.i18n.t("greeting");
 
@@ -25,7 +26,7 @@ bot.command("start", context => {
 });
 
 bot.command("stop", context => {
-  console.log("Stopped from: ", JSON.stringify(context.from));
+  Logger.info("Stopped from: ", JSON.stringify(context.from));
   context.session.isAsking = ConfigState.NONE;
 
   let id = context.chat.id;
@@ -42,7 +43,7 @@ bot.command("stop", context => {
           .then(() => context.reply(context.i18n.t("reminder-register-another")));
       }
     })
-    .catch(ex => console.log(ex));
+    .catch(ex => Logger.info(ex));
 });
 
 bot.command("check", context => {
@@ -82,10 +83,10 @@ bot.command("check", context => {
 });
 
 bot.on("text", context => {
-  console.log("Received a text message:", JSON.stringify(context.message));
+  Logger.info("Received a text message:", JSON.stringify(context.message));
 
   if (context.message.text.startsWith("👍")) {
-    console.log("thumbs-up, pill-taken");
+    Logger.info("thumbs-up, pill-taken");
     return PillNotifier
       .setPillTaken(context)
       .then((count) => {
@@ -99,7 +100,7 @@ bot.on("text", context => {
 });
 
 bot.on("location", context => {
-  console.log("Received a location:", JSON.stringify(context.message));
+  Logger.info("Received a location:", JSON.stringify(context.message));
   let lat = context.message.location.latitude;
   let lon = context.message.location.longitude;
   let locationText = `${lat},${lon}`;
@@ -107,19 +108,19 @@ bot.on("location", context => {
 });
 
 bot.action("twentyone", context => {
-  console.log("Action twentyone");
+  Logger.info("Action twentyone");
   return context.answerCbQuery()
     .then(() => settingHelper.processMessage(context, "21"));
 });
 
 bot.action("twentyeight", context => {
-  console.log("Action twentyeight");
+  Logger.info("Action twentyeight");
   return context.answerCbQuery()
     .then(() => settingHelper.processMessage(context, "28"));
 });
 
 bot.action("pill-taken", context => {
-  console.log("pill-taken");
+  Logger.info("pill-taken");
   return PillNotifier
     .setPillTaken(context)
     .then((count) => {
@@ -133,7 +134,7 @@ bot.action("pill-taken", context => {
 });
 
 bot.action("pill-remind-later", context => {
-  console.log("pill-remind-later");
+  Logger.info("pill-remind-later");
   return context.answerCbQuery()
     .then(() => context.reply(
       context.i18n.t("pill-remind-later"),
@@ -190,11 +191,11 @@ bot.action(/pill-remind-later-\d+/g, context => {
           context.i18n.t("pill-remind-later-confirmation", { delayText: delayText })
         ));
     })
-    .catch(ex => console.log(ex));
+    .catch(ex => Logger.info(ex));
 });
 
 bot.catch((err) => {
-  console.log("Error in bot:", err);
+  Logger.info("Error in bot:", err);
 });
 
 PillNotifier.start();

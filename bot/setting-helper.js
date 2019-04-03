@@ -1,6 +1,7 @@
 //var moment = require("moment");
 var moment = require("moment-timezone");
 
+const Logger = require('./../logger');
 const DatabaseWrapper = require("./database-wrapper");
 const TelegrafWrapper = require("./telegraf-wrapper");
 const Extra = TelegrafWrapper.getExtra();
@@ -110,7 +111,7 @@ function stepTimezoneLocation(context, text) {
     })
     .asPromise()
     .then(response => {
-      console.log(
+      Logger.debug(
         `Timezone api response: ${JSON.stringify(response)}\n timeZoneId: ${
         response.json.timeZoneId
         }`
@@ -121,7 +122,7 @@ function stepTimezoneLocation(context, text) {
       return askStepAlarmTime(context);
     })
     .catch(err => {
-      console.log(`Error while calling timezone api: ${JSON.stringify(err)}`);
+      Logger.info(`Error while calling timezone api: ${JSON.stringify(err)}`);
       // context
       // 	.reply(context.i18n.t("setting-timezone-location-error"))
       // 	.then(() => askStepTimezoneLocation(context));
@@ -160,7 +161,7 @@ function stepAlarmTime(context, text) {
         if (hasRemoved) context.reply(context.i18n.t("setting-overwritten"));
       });
     })
-    .catch(ex => console.log(ex));
+    .catch(ex => Logger.info(ex));
 }
 
 function setScheduling(context) {
@@ -190,7 +191,7 @@ function setScheduling(context) {
 
 function processMessage(context, text) {
   let isAsking = context.session.isAsking || ConfigState.NONE;
-  console.log("isAsking: " + isAsking);
+  Logger.debug("isAsking: " + isAsking);
 
   switch (isAsking) {
     case ConfigState.DATE:

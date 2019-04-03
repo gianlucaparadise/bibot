@@ -1,5 +1,6 @@
 var moment = require("moment-timezone");
 
+const Logger = require('./../logger');
 const DatabaseWrapper = require('./database-wrapper');
 const telegrafWrapper = require('./telegraf-wrapper');
 const bot = telegrafWrapper.getBot();
@@ -24,19 +25,19 @@ function onReminder(chatId, firstDayOfPill, pillType, lang) {
 		.catch(ex => {
 			if (ex.code === 403) {
 				// The user blocked me 😢
-				console.log(`Removing ${chatId} because the user blocked me`);
+				Logger.debug(`Removing ${chatId} because the user blocked me`);
 				DatabaseWrapper.remove(chatId)
-					.then(hasRemoved => console.log(`HasRemoved: ${hasRemoved}`))
-					.catch(ex => console.log(ex));
+					.then(hasRemoved => Logger.debug(`HasRemoved: ${hasRemoved}`))
+					.catch(ex => Logger.info(ex));
 
 				return;
 			}
-			console.log(ex);
+			Logger.info(ex);
 		});
 }
 
 function shouldSendPillWarning(startingDateRaw, pillType) {
-	console.log("shouldWarn: " + startingDateRaw + " " + pillType);
+	Logger.debug("shouldWarn: " + startingDateRaw + " " + pillType);
 
 	if (pillType == "21") {
 		let pillDay = calculatePillDay(startingDateRaw);
@@ -59,14 +60,14 @@ function calculatePillDay(startingDateRaw) {
 
 	let pillDay = (pastDays % 28) + 1; // this is a number between 1 and 28
 
-	console.log("calculatePillDay - pastDays: " + pastDays + " pillDay: " + pillDay);
+	Logger.debug("calculatePillDay - pastDays: " + pastDays + " pillDay: " + pillDay);
 
 	return pillDay;
 }
 
 module.exports = {
 	start: function () {
-		console.log("notifier started");
+		Logger.debug("notifier started");
 		// check for reminders
 		setInterval(function () {
 			DatabaseWrapper.check(onReminder);
@@ -76,7 +77,7 @@ module.exports = {
 	},
 
 	setPillTaken: function (context) {
-		console.log("setting pill taken");
+		Logger.debug("setting pill taken");
 		let id = context.chat.id;
 		let lang = context.from.language_code;
 		return DatabaseWrapper

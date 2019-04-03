@@ -10,6 +10,8 @@ const i18n = new TelegrafI18n({
 	directory: path.resolve(__dirname, 'locales')
 });
 
+const Logger = require('./../logger');
+
 var bot = null;
 var calendar = null;
 
@@ -24,7 +26,7 @@ class TelegrafWrapper {
 			bot.use(Telegraf.session());
 			bot.use(i18n.middleware());
 
-			console.log("Bot initialized");
+			Logger.debug("Bot initialized");
 		}
 
 		return bot;

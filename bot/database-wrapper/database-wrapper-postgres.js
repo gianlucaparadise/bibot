@@ -1,4 +1,5 @@
 const moment = require("moment");
+const Logger = require('./../../logger');
 
 const pg = require('pg');
 pg.defaults.ssl = true;
@@ -31,14 +32,14 @@ module.exports = {
 }
 
 function connect(next) {
-	console.log("connecting");
+	Logger.debug("connecting");
 	pg.connect(process.env.DATABASE_URL, function (err, client) {
 		if (err) {
-			console.log(err);
+			Logger.debug(err);
 			return;
 			//throw err;
 		}
-		console.log("Connected to the database");
+		Logger.debug("Connected to the database");
 
 		next(client);
 	});
@@ -46,23 +47,23 @@ function connect(next) {
 
 function getAllReminders(client, onReminder) {
 	let time = moment.utc().format("HH:mm");
-	console.log('SELECT * FROM pillReminders WHERE time = \'' + time + '\';');
+	Logger.debug('SELECT * FROM pillReminders WHERE time = \'' + time + '\';');
 
 	client
 		.query('SELECT * FROM pillReminders WHERE time = \'' + time + '\';')
 		.on('row', function (row, result) {
-			console.log(JSON.stringify(row));
+			Logger.debug(JSON.stringify(row));
 			result.addRow(row);
 		})
 		.on('end', function (result) {
-			console.log(result.rows.length + ' rows were received');
+			Logger.debug(result.rows.length + ' rows were received');
 
 			result.rows.forEach(row => {
 				onReminder(row.chatid, row.firstdayofpill, row.pilltype);
 			});
 
 			client.end(function (err) {
-				if (err) console.log(err);
+				if (err) Logger.debug(err);
 			});
 		});
 }
@@ -70,19 +71,19 @@ function getAllReminders(client, onReminder) {
 function insertReminder(client, chatId, firstDayOfPill, pillType, time) {
 	var queryText = 'INSERT INTO pillReminders(chatId, firstDayOfPill, pillType, time, creationDate)' +
 		'VALUES($1, $2, $3, $4, $5) RETURNING id';
-	console.log("inserting " + chatId + " " + firstDayOfPill + " " + pillType + " " + time);
+	Logger.debug("inserting " + chatId + " " + firstDayOfPill + " " + pillType + " " + time);
 	client.query(queryText, [chatId, firstDayOfPill, pillType, time, new Date()], function (err, result) {
 		if (err) {
-			console.log(err);
+			Logger.debug(err);
 			return;
 			//throw err;
 		}
 
 		var newlyCreatedUserId = result.rows[0].id;
-		console.log("Id inserted row: " + newlyCreatedUserId);
+		Logger.debug("Id inserted row: " + newlyCreatedUserId);
 
 		client.end(function (err) {
-			if (err) console.log(err);
+			if (err) Logger.debug(err);
 		});
 	});
 }
@@ -91,38 +92,38 @@ function removeReminder(client, chatId) {
 	var queryText = 'DELETE FROM pillReminders WHERE chatId = $1';
 	client.query(queryText, [chatId], function (err, result) {
 		if (err) {
-			console.log(err);
+			Logger.debug(err);
 			return;
 			//throw err;
 		}
 
-		console.log("Removed: " + chatId);
-		console.log(result);
+		Logger.debug("Removed: " + chatId);
+		Logger.debug(result);
 
 		client.end(function (err) {
-			if (err) console.log(err);
+			if (err) Logger.debug(err);
 		});
 	});
 }
 
 function hasReminderByChatId(client, chatId, onHasReminder) {
-	console.log('SELECT * FROM pillReminders WHERE chatId = \'' + chatId + '\';');
+	Logger.debug('SELECT * FROM pillReminders WHERE chatId = \'' + chatId + '\';');
 
 	client
 		.query('SELECT * FROM pillReminders WHERE chatId = \'' + chatId + '\';')
 		.on('row', function (row, result) {
-			console.log(JSON.stringify(row));
+			Logger.debug(JSON.stringify(row));
 			result.addRow(row);
 		})
 		.on('end', function (result) {
-			console.log(result.rows.length + ' rows were received');
+			Logger.debug(result.rows.length + ' rows were received');
 			let reminder = result.rows[0];
 			if (reminder) {
 				onHasReminder(reminder.firstdayofpill, reminder.pilltype, reminder.time);
 			}
 
 			client.end(function (err) {
-				if (err) console.log(err);
+				if (err) Logger.debug(err);
 			});
 		});
 }
