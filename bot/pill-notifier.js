@@ -14,12 +14,24 @@ function onReminder(chatId, firstDayOfPill, pillType, lang) {
 	DatabaseWrapper.setWaitingForAnswer(chatId, lang)
 		.then(() => {
 			// todo: insert plenty of strings and pick one randomly.
-			telegram.sendMessage(chatId, i18n.t(lang, "reminder-message"), Extra.HTML().markup((m) =>
+			return telegram.sendMessage(chatId, i18n.t(lang, "reminder-message"), Extra.HTML().markup((m) =>
 				m.inlineKeyboard([
 					m.callbackButton(i18n.t(lang, "reminder-delay"), "pill-remind-later"),
 					m.callbackButton(i18n.t(lang, "reminder-taken"), "pill-taken")
 				])
 			));
+		})
+		.catch(ex => {
+			if (ex.code === 403) {
+				// The user blocked me 😢
+				console.log(`Removing ${chatId} because the user blocked me`);
+				DatabaseWrapper.remove(chatId)
+					.then(hasRemoved => console.log(`HasRemoved: ${hasRemoved}`))
+					.catch(ex => console.log(ex));
+
+				return;
+			}
+			console.log(ex);
 		});
 }
 
